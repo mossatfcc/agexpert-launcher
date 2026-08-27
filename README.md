@@ -3,6 +3,8 @@
 Terminal and VS Code launcher for the AgExpert development environment. Starts web apps,
 APIs, and the environment proxy in dedicated terminal tabs from a single `agexpert` command.
 
+For how the pieces fit together, see [docs/architecture.md](docs/architecture.md).
+
 ```powershell
 agexpert field              # field client + field server
 agexpert field api          # field API on the Test launch profile
@@ -23,6 +25,7 @@ Test-AgExpertEnvironment    # diagnose why something will not start
 | `src/extension/`                | VS Code extension that opens dedicated terminal tabs                   |
 | `copilot/agents/`               | Copilot agent definition                                               |
 | `copilot/skills/`               | Copilot skills for using and maintaining the toolkit                   |
+| `docs/architecture.md`          | How the config, module, extension, and proxy fit together              |
 | `tests/`                        | Pester suite                                                           |
 | `tools/`                        | Install, release, and repo bootstrap scripts                           |
 
