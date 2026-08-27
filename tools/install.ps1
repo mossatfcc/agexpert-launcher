@@ -14,7 +14,8 @@ param(
     [Parameter(Mandatory)][string]$RepoRoot,
     [string]$CertificateDirectory = (Join-Path $HOME '.aspnet\https'),
     [switch]$SkipExtension,
-    [switch]$SkipProfile
+    [switch]$SkipProfile,
+    [switch]$AllHosts
 )
 
 $ErrorActionPreference = 'Stop'
@@ -103,7 +104,8 @@ foreach ($asset in @(
 
 # 5. Profile import
 if (-not $SkipProfile) {
-    $profilePath = $PROFILE.CurrentUserAllHosts
+    # Default to the personal current-host profile ($PROFILE); -AllHosts targets profile.ps1.
+    $profilePath = if ($AllHosts) { $PROFILE.CurrentUserAllHosts } else { $PROFILE.CurrentUserCurrentHost }
     $importLine = 'Import-Module AgExpert.Launcher'
 
     $existing = if (Test-Path $profilePath) { Get-Content $profilePath -Raw } else { '' }
