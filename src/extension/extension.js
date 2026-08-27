@@ -60,18 +60,15 @@ function normalizeKey(value) {
     .toLowerCase();
 }
 
-function createTerminal(name, cwd, color, icon, command, parentTerminal) {
-  const options = {
+// Every terminal the launcher opens is its own standalone tab; nothing is grouped
+// or split, no matter how many terminals a single launch (or `agexpert start`) opens.
+function createTerminal(name, cwd, color, icon, command) {
+  const terminal = vscode.window.createTerminal({
     name,
     cwd,
     color: new vscode.ThemeColor(color),
     iconPath: new vscode.ThemeIcon(icon),
-  };
-  if (parentTerminal) {
-    options.location = { parentTerminal };
-  }
-
-  const terminal = vscode.window.createTerminal(options);
+  });
   terminal.sendText(command);
   terminal.show();
   return terminal;
@@ -142,9 +139,8 @@ function launchApp(configuration, name, target) {
     return;
   }
 
-  let client;
   if (target !== "server") {
-    client = createTerminal(
+    createTerminal(
       `${app.name} client`,
       configuration.clientPath,
       "terminal.ansiGreen",
@@ -160,7 +156,6 @@ function launchApp(configuration, name, target) {
       "terminal.ansiCyan",
       "server",
       `dotnet run --no-build --no-restore --project ${app.project} --launch-profile "${app.launchProfile}"`,
-      client,
     );
   }
 }
