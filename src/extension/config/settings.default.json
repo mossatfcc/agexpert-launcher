@@ -1,0 +1,9 @@
+{
+  "repoRoot": "C:/AgExpert/FMPro",
+  "clientDirectory": "AgExpert.Web/Client",
+  "proxyDirectory": "eng/agexpert-environment-proxy",
+  "certificateDirectory": "~/.aspnet/https",
+  "containerName": "agexpert-environment-proxy",
+  "imageTag": "agexpert-environment-proxy:profile",
+  "launcherUri": "vscode://agexpert.launcher/launch"
+}

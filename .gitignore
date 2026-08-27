@@ -1,0 +1,21 @@
+# Secrets and machine-local configuration
+*.env
+.env
+launcher.settings.json
+
+# Build output
+*.vsix
+dist/
+out/
+node_modules/
+
+# Test output
+TestResults*.xml
+coverage*.xml
+
+# Editor and OS noise
+.vs/
+.idea/
+*.user
+Thumbs.db
+.DS_Store

@@ -1,0 +1,30 @@
+{
+  "name": "launcher",
+  "displayName": "AgExpert Launcher",
+  "description": "Opens dedicated integrated-terminal tabs for AgExpert web apps, APIs, and the environment proxy.",
+  "publisher": "agexpert",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mosss/agexpert-launcher.git"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onUri"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "agexpert.launcher.launch",
+        "title": "AgExpert: Launch App Terminals"
+      }
+    ]
+  }
+}

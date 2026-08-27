@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install PowerShell dependencies
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module Pester -MinimumVersion 5.5.0 -Force -Scope CurrentUser
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Analyze
+        shell: pwsh
+        run: |
+          $findings = Invoke-ScriptAnalyzer -Path ./src/module -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
+          if ($findings) { $findings | Format-Table -AutoSize | Out-String | Write-Host; throw "PSScriptAnalyzer found $($findings.Count) issue(s)." }
+
+      - name: Test
+        shell: pwsh
+        run: |
+          $configuration = New-PesterConfiguration
+          $configuration.Run.Path = './tests'
+          $configuration.Filter.ExcludeTag = 'Integration'
+          $configuration.Output.Verbosity = 'Detailed'
+          $configuration.Run.Exit = $true
+          Invoke-Pester -Configuration $configuration
+
+      - name: Package extension
+        shell: pwsh
+        run: |
+          New-Item -Path ./src/extension/config -ItemType Directory -Force | Out-Null
+          Copy-Item ./config/*.json ./src/extension/config -Force
+          cd ./src/extension
+          npx --yes @vscode/vsce package --no-dependencies --allow-missing-repository --out ../../agexpert-launcher.vsix
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agexpert-launcher-vsix
+          path: ./agexpert-launcher.vsix
