@@ -56,6 +56,7 @@ External dependencies, owned elsewhere and never vendored: the proxy image in
 
 | Command | Result |
 |---|---|
+| `agexpert start [app]` | Whole dev environment: app client + server + proxy (three tabs) |
 | `agexpert <app>` | Client watch + server tabs |
 | `agexpert <app> client` \| `server` | One tab |
 | `agexpert <api> api [Profile]` | API tab; profile defaults to `Test` |
@@ -68,6 +69,23 @@ their client and server when named alone. **API-only products require the `api` 
 
 `benchmarking` and `digitalAssistant` are `proxyOnly`: they have ports but no local project, and
 attempting to start them fails with a clear message.
+
+## Start the whole dev environment
+
+When the user says something like "start app" or "start the development environment", bring up the
+full local stack — the app **client** watch, its **server**, and the **proxy** (three tabs) — with
+the client running locally against the proxy and Test APIs:
+
+1. **First time only** — no default app is saved. Ask the user which app to run as the default
+   (for example `field`, `accounting`, or `home`), then persist it: `Set-AgExpertDefaultApp <app>`
+   (server-backed front ends only; `gallery` and API/proxy-only products are rejected).
+2. **Every time** — run `agexpert start`. With no app named it uses the saved default; pass an app
+   to override once (`agexpert start accounting`). This opens the three tabs.
+3. **Report green** — `Start-AgExpertEnvironment` polls until the proxy container is running and the
+   app server port responds, then returns `Check`/`Status`/`Detail` rows. Report back once the
+   `Environment` row is `Pass` (green and ready), or relay the `Warn` detail if it times out.
+
+`Get-AgExpertDefaultApp` tells you whether a default is already set, so you know whether to prompt.
 
 ## Rules that are easy to get wrong
 

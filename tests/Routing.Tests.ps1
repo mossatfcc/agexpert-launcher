@@ -1,5 +1,6 @@
 BeforeAll {
     $script:RepoRoot = Split-Path $PSScriptRoot -Parent
+    Get-Module AgExpert.Launcher | Remove-Module -Force -ErrorAction SilentlyContinue
     Import-Module (Join-Path $script:RepoRoot 'src\module\AgExpert.Launcher\AgExpert.Launcher.psd1') -Force
 }
 
@@ -10,6 +11,7 @@ Describe 'Invoke-AgExpert routing' {
         Mock -ModuleName AgExpert.Launcher Start-AgExpertProxy { }
         Mock -ModuleName AgExpert.Launcher Open-AgExpertProxyTerminal { }
         Mock -ModuleName AgExpert.Launcher Set-AgExpertProxyService { }
+        Mock -ModuleName AgExpert.Launcher Start-AgExpertEnvironment { }
     }
 
     It 'starts the client and server for a front-end product' {
@@ -58,6 +60,19 @@ Describe 'Invoke-AgExpert routing' {
         Invoke-AgExpert proxy field stop
         Should -Invoke -ModuleName AgExpert.Launcher Set-AgExpertProxyService -Times 1 -Exactly `
             -ParameterFilter { $ServiceName -eq 'field' -and $Action -eq 'stop' }
+    }
+
+    It 'starts the dev environment with the saved default when no app is named' {
+        Invoke-AgExpert start
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertEnvironment -Times 1 -Exactly `
+            -ParameterFilter { -not $App }
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApp -Times 0 -Exactly
+    }
+
+    It 'starts the dev environment for an explicitly named app' {
+        Invoke-AgExpert start accounting
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertEnvironment -Times 1 -Exactly `
+            -ParameterFilter { $App -eq 'accounting' }
     }
 }
 

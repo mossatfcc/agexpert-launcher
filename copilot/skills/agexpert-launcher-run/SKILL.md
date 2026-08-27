@@ -8,13 +8,30 @@ description: Start AgExpert web apps, APIs, or the environment proxy, and diagno
 ## 1. Start things
 
 ```powershell
-agexpert field              # client + server
-agexpert field api          # API on the Test profile
-agexpert field api UAT      # explicit profile
+agexpert start                # whole dev environment for the saved default app
+agexpert start accounting     # whole dev environment for a specific app
+agexpert field                # client + server
+agexpert field api            # API on the Test profile
+agexpert field api UAT        # explicit profile
 agexpert proxy status
 ```
 
 The `api` suffix is mandatory for API-only products. `agexpert mcCain` is an error by design.
+
+### Start the whole dev environment
+
+`agexpert start` opens three tabs — the app **client** watch, its **server**, and the **proxy** —
+leaving the client running locally against the proxy and Test APIs.
+
+- **First run:** no default is saved. Ask which app to run (for example `field`, `accounting`, or
+  `home`) and save it with `Set-AgExpertDefaultApp <app>`. Only server-backed front ends qualify;
+  `gallery` (client-only) and API/proxy-only products are rejected.
+- **Later runs:** `agexpert start` reuses the saved default; name an app to override once.
+- **Readiness:** it polls until the proxy container is running and the app server port responds,
+  then returns `Check`/`Status`/`Detail` rows. It is green when the `Environment` row is `Pass`;
+  a timeout produces a `Warn` (the server or first `ng build --watch` may still be compiling).
+
+`Get-AgExpertDefaultApp` returns the saved default (or nothing), so you know whether to prompt.
 
 ## 2. Diagnose with code, not guesswork
 

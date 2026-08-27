@@ -35,6 +35,11 @@ function Invoke-AgExpert {
         return
     }
 
+    if ($first -eq 'start') {
+        Start-AgExpertEnvironment -App $second
+        return
+    }
+
     if ($second -eq 'api') {
         Start-AgExpertApi -Name $first -LaunchProfile $third
         return
