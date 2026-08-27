@@ -74,6 +74,25 @@ Describe 'Invoke-AgExpert routing' {
         Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertEnvironment -Times 1 -Exactly `
             -ParameterFilter { $App -eq 'accounting' }
     }
+
+    It 'prints the version for <Flag> without launching anything' -ForEach @(
+        @{ Flag = '--version' }
+        @{ Flag = '-v' }
+        @{ Flag = 'version' }
+    ) {
+        $output = Invoke-AgExpert $Flag 6>&1
+        $output | Should -BeLike "*AgExpert Launcher*"
+        $output | Should -BeLike "*$(Get-AgExpertVersion)*"
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApp -Times 0 -Exactly
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertEnvironment -Times 0 -Exactly
+    }
+}
+
+Describe 'Get-AgExpertVersion' {
+    It 'reports the module manifest version' {
+        $manifest = Import-PowerShellDataFile (Join-Path $script:RepoRoot 'src\module\AgExpert.Launcher\AgExpert.Launcher.psd1')
+        Get-AgExpertVersion | Should -Be ([version]$manifest.ModuleVersion)
+    }
 }
 
 Describe 'Start-AgExpertApi' {

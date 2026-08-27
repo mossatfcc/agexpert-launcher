@@ -10,6 +10,7 @@
         'Get-AgExpertApiConfig'
         'Get-AgExpertDefaultApp'
         'Get-AgExpertProxyService'
+        'Get-AgExpertVersion'
         'Invoke-AgExpert'
         'Open-AgExpertLauncherUri'
         'Repair-AgExpertProxy'
