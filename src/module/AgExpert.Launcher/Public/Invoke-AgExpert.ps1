@@ -10,6 +10,7 @@ function Invoke-AgExpert {
             agexpert field api
             agexpert field api UAT
             agexpert proxy status
+            agexpert --version
     #>
     [CmdletBinding()]
     param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
@@ -18,6 +19,11 @@ function Invoke-AgExpert {
     $first = if ($Arguments.Count -ge 1) { $Arguments[0] } else { $null }
     $second = if ($Arguments.Count -ge 2) { $Arguments[1] } else { $null }
     $third = if ($Arguments.Count -ge 3) { $Arguments[2] } else { $null }
+
+    if ($first -in @('--version', '-v', 'version')) {
+        Write-Host "AgExpert Launcher $(Get-AgExpertVersion)"
+        return
+    }
 
     if ($first -eq 'proxy') {
         if ($Arguments.Count -ge 3) {
