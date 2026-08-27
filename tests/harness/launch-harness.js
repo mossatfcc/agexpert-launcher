@@ -57,7 +57,9 @@ Module._load = function (request, ...rest) {
   return originalLoad.call(this, request, ...rest);
 };
 
-const extension = require(path.join(__dirname, "..", "..", "src", "extension", "extension.js"));
+const extension = require(
+  path.join(__dirname, "..", "..", "src", "extension", "extension.js"),
+);
 extension.activate({ subscriptions: { push() {} } });
 
 vscodeStub.handler.handleUri({ query: process.argv[2] || "" });

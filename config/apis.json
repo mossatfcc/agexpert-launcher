@@ -1,28 +1,170 @@
 {
   "apis": [
-    { "name": "subscriptions", "proxyName": "Subscriptions API", "port": 44305, "directory": "AgExpert.Subscriptions/src/Api", "defaultProfile": "Test" },
-    { "name": "field", "proxyName": "Field API", "port": 44315, "directory": "AgExpert.Field/src/Api", "defaultProfile": "Test" },
-    { "name": "accounting", "proxyName": "Accounting API", "port": 44325, "directory": "AgExpert.Accounting/Api", "defaultProfile": "Test" },
-    { "name": "climateFieldView", "proxyName": "Climate FieldView API", "port": 44331, "directory": "AgExpert.ClimateFieldView/src/Api", "defaultProfile": "Test" },
-    { "name": "mcCain", "proxyName": "McCain API", "port": 44332, "directory": "AgExpert.McCain/src/Api", "defaultProfile": "Test" },
-    { "name": "sustainability", "proxyName": "Sustainability API", "port": 44333, "directory": "AgExpert.Sustainability/src/Api", "defaultProfile": "Test" },
-    { "name": "agConnexion", "proxyName": "AgConnexion API", "port": 44334, "directory": "AgExpert.AgConnexion/src/Api", "defaultProfile": "Test" },
-    { "name": "attachments", "proxyName": "Attachments API", "port": 44335, "directory": "AgExpert.Attachments/src/Api", "defaultProfile": "Test" },
-    { "name": "leaf", "proxyName": "Leaf API", "port": 44336, "directory": "AgExpert.Leaf/src/Api", "defaultProfile": "Test" },
-    { "name": "johnDeere", "proxyName": "John Deere API", "port": 44337, "directory": "AgExpert.JohnDeere/src/Api", "defaultProfile": "Test" },
-    { "name": "weather", "proxyName": "Weather API", "port": 44338, "directory": "AgExpert.Weather/src/Api", "defaultProfile": "Test" },
-    { "name": "plaid", "proxyName": "Plaid API", "port": 44339, "directory": "AgExpert.Plaid/src/Api", "defaultProfile": "Test" },
-    { "name": "contacts", "proxyName": "Contacts API", "port": 44345, "directory": "AgExpert.Contacts/src/Api", "defaultProfile": "Test" },
-    { "name": "features", "proxyName": "Features API", "port": 44355, "directory": "AgExpert.Features/src/Api", "defaultProfile": "Test" },
-    { "name": "benchmarking", "proxyName": "Benchmarking API", "port": 44356, "proxyOnly": true },
-    { "name": "digitalAssistant", "proxyName": "Digital Assistant API", "port": 44357, "proxyOnly": true },
-    { "name": "grainFox", "proxyName": "GrainFox API", "port": 44361, "directory": "AgExpert.GrainFox/src/Api", "defaultProfile": "Test" },
-    { "name": "flinks", "proxyName": "Flinks API", "port": 44362, "directory": "AgExpert.Flinks/src/Api", "defaultProfile": "Test" },
-    { "name": "cnhi", "proxyName": "Cnhi API", "port": 44363, "directory": "AgExpert.Cnhi/src/Api", "defaultProfile": "Test" },
-    { "name": "swatMaps", "proxyName": "SwatMaps API", "port": 44364, "directory": "AgExpert.SwatMaps/src/Api", "defaultProfile": "Test" },
-    { "name": "partners", "proxyName": "Partners API", "port": 44365, "directory": "AgExpert.Partners/src/Api", "defaultProfile": "Test" },
-    { "name": "reports", "proxyName": "Reports API", "port": 44375, "directory": "AgExpert.Reports/src/Api", "defaultProfile": "Test" },
-    { "name": "notifications", "proxyName": "Notifications API", "port": 44385, "directory": "AgExpert.Notifications/src/Api", "defaultProfile": "Test" },
-    { "name": "documents", "proxyName": "Documents API", "port": 44395, "directory": "AgExpert.Documents/src/Api", "defaultProfile": "Test" }
+    {
+      "name": "subscriptions",
+      "proxyName": "Subscriptions API",
+      "port": 44305,
+      "directory": "AgExpert.Subscriptions/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "field",
+      "proxyName": "Field API",
+      "port": 44315,
+      "directory": "AgExpert.Field/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "accounting",
+      "proxyName": "Accounting API",
+      "port": 44325,
+      "directory": "AgExpert.Accounting/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "climateFieldView",
+      "proxyName": "Climate FieldView API",
+      "port": 44331,
+      "directory": "AgExpert.ClimateFieldView/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "mcCain",
+      "proxyName": "McCain API",
+      "port": 44332,
+      "directory": "AgExpert.McCain/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "sustainability",
+      "proxyName": "Sustainability API",
+      "port": 44333,
+      "directory": "AgExpert.Sustainability/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "agConnexion",
+      "proxyName": "AgConnexion API",
+      "port": 44334,
+      "directory": "AgExpert.AgConnexion/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "attachments",
+      "proxyName": "Attachments API",
+      "port": 44335,
+      "directory": "AgExpert.Attachments/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "leaf",
+      "proxyName": "Leaf API",
+      "port": 44336,
+      "directory": "AgExpert.Leaf/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "johnDeere",
+      "proxyName": "John Deere API",
+      "port": 44337,
+      "directory": "AgExpert.JohnDeere/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "weather",
+      "proxyName": "Weather API",
+      "port": 44338,
+      "directory": "AgExpert.Weather/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "plaid",
+      "proxyName": "Plaid API",
+      "port": 44339,
+      "directory": "AgExpert.Plaid/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "contacts",
+      "proxyName": "Contacts API",
+      "port": 44345,
+      "directory": "AgExpert.Contacts/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "features",
+      "proxyName": "Features API",
+      "port": 44355,
+      "directory": "AgExpert.Features/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "benchmarking",
+      "proxyName": "Benchmarking API",
+      "port": 44356,
+      "proxyOnly": true
+    },
+    {
+      "name": "digitalAssistant",
+      "proxyName": "Digital Assistant API",
+      "port": 44357,
+      "proxyOnly": true
+    },
+    {
+      "name": "grainFox",
+      "proxyName": "GrainFox API",
+      "port": 44361,
+      "directory": "AgExpert.GrainFox/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "flinks",
+      "proxyName": "Flinks API",
+      "port": 44362,
+      "directory": "AgExpert.Flinks/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "cnhi",
+      "proxyName": "Cnhi API",
+      "port": 44363,
+      "directory": "AgExpert.Cnhi/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "swatMaps",
+      "proxyName": "SwatMaps API",
+      "port": 44364,
+      "directory": "AgExpert.SwatMaps/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "partners",
+      "proxyName": "Partners API",
+      "port": 44365,
+      "directory": "AgExpert.Partners/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "reports",
+      "proxyName": "Reports API",
+      "port": 44375,
+      "directory": "AgExpert.Reports/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "notifications",
+      "proxyName": "Notifications API",
+      "port": 44385,
+      "directory": "AgExpert.Notifications/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
+      "name": "documents",
+      "proxyName": "Documents API",
+      "port": 44395,
+      "directory": "AgExpert.Documents/src/Api",
+      "defaultProfile": "Test"
+    }
   ]
 }

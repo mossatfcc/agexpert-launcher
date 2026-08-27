@@ -15,8 +15,13 @@ function toWindowsPath(value) {
 
 // Packaged builds carry config alongside extension.js; running from the repo falls back to config/.
 function resolveConfigDirectory() {
-  const candidates = [path.join(__dirname, "config"), path.join(__dirname, "..", "..", "config")];
-  const found = candidates.find((candidate) => fs.existsSync(path.join(candidate, "apis.json")));
+  const candidates = [
+    path.join(__dirname, "config"),
+    path.join(__dirname, "..", "..", "config"),
+  ];
+  const found = candidates.find((candidate) =>
+    fs.existsSync(path.join(candidate, "apis.json")),
+  );
   if (!found) {
     throw new Error("AgExpert Launcher: unable to locate apis.json.");
   }
@@ -25,23 +30,34 @@ function resolveConfigDirectory() {
 
 function loadConfiguration() {
   const configDirectory = resolveConfigDirectory();
-  const settings = readJson(path.join(configDirectory, "settings.default.json"));
+  const settings = readJson(
+    path.join(configDirectory, "settings.default.json"),
+  );
 
-  const overridePath = path.join(os.homedir(), ".agexpert", "launcher.settings.json");
+  const overridePath = path.join(
+    os.homedir(),
+    ".agexpert",
+    "launcher.settings.json",
+  );
   if (fs.existsSync(overridePath)) {
     Object.assign(settings, readJson(overridePath));
   }
 
   return {
     repoRoot: toWindowsPath(settings.repoRoot),
-    clientPath: path.join(toWindowsPath(settings.repoRoot), toWindowsPath(settings.clientDirectory)),
+    clientPath: path.join(
+      toWindowsPath(settings.repoRoot),
+      toWindowsPath(settings.clientDirectory),
+    ),
     apis: readJson(path.join(configDirectory, "apis.json")).apis,
     apps: readJson(path.join(configDirectory, "apps.json")).apps,
   };
 }
 
 function normalizeKey(value) {
-  return String(value || "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+  return String(value || "")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toLowerCase();
 }
 
 function createTerminal(name, cwd, color, icon, command, parentTerminal) {
@@ -73,7 +89,9 @@ function launchProxy(configuration) {
 
 function launchApi(configuration, name, launchProfile) {
   const key = normalizeKey(name);
-  const api = configuration.apis.find((entry) => normalizeKey(entry.name) === key);
+  const api = configuration.apis.find(
+    (entry) => normalizeKey(entry.name) === key,
+  );
 
   if (!api) {
     vscode.window.showErrorMessage(`AgExpert Launcher: unknown API '${name}'.`);
@@ -98,7 +116,9 @@ function launchApi(configuration, name, launchProfile) {
 
 function launchApp(configuration, name, target) {
   const key = normalizeKey(name);
-  const app = configuration.apps.find((entry) => normalizeKey(entry.name) === key);
+  const app = configuration.apps.find(
+    (entry) => normalizeKey(entry.name) === key,
+  );
 
   if (!app) {
     vscode.window.showErrorMessage(`AgExpert Launcher: unknown app '${name}'.`);
@@ -153,7 +173,9 @@ function launch(name, target = "all", launchProfile) {
     return;
   }
   if (!TARGETS.includes(target)) {
-    vscode.window.showErrorMessage(`AgExpert Launcher: unknown target '${target}'.`);
+    vscode.window.showErrorMessage(
+      `AgExpert Launcher: unknown target '${target}'.`,
+    );
     return;
   }
   if (target === "api") {
@@ -182,27 +204,33 @@ function activate(context) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("agexpert.launcher.launch", async (name) => {
-      const configuration = loadConfiguration();
-      const choice =
-        name ||
-        (await vscode.window.showQuickPick(
-          [
-            ...configuration.apps.map((app) => ({ label: app.name, description: "app" })),
-            ...configuration.apis
-              .filter((api) => !api.proxyOnly)
-              .map((api) => ({ label: api.name, description: "api" })),
-          ],
-          { placeHolder: "Select an AgExpert target to launch" },
-        ));
+    vscode.commands.registerCommand(
+      "agexpert.launcher.launch",
+      async (name) => {
+        const configuration = loadConfiguration();
+        const choice =
+          name ||
+          (await vscode.window.showQuickPick(
+            [
+              ...configuration.apps.map((app) => ({
+                label: app.name,
+                description: "app",
+              })),
+              ...configuration.apis
+                .filter((api) => !api.proxyOnly)
+                .map((api) => ({ label: api.name, description: "api" })),
+            ],
+            { placeHolder: "Select an AgExpert target to launch" },
+          ));
 
-      if (!choice) return;
-      if (typeof choice === "string") {
-        launch(choice);
-        return;
-      }
-      launch(choice.label, choice.description === "api" ? "api" : "all");
-    }),
+        if (!choice) return;
+        if (typeof choice === "string") {
+          launch(choice);
+          return;
+        }
+        launch(choice.label, choice.description === "api" ? "api" : "all");
+      },
+    ),
   );
 }
 

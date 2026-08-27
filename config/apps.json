@@ -1,10 +1,18 @@
 {
   "apps": [
     { "name": "home", "project": "../Server", "launchProfile": "Home" },
-    { "name": "accounting", "project": "../Server", "launchProfile": "Accounting" },
+    {
+      "name": "accounting",
+      "project": "../Server",
+      "launchProfile": "Accounting"
+    },
     { "name": "field", "project": "../Server", "launchProfile": "Field" },
     { "name": "admin", "project": "../Admin", "launchProfile": "Admin" },
-    { "name": "developer", "project": "../DeveloperPortal", "launchProfile": "DeveloperPortal" },
+    {
+      "name": "developer",
+      "project": "../DeveloperPortal",
+      "launchProfile": "DeveloperPortal"
+    },
     { "name": "gallery", "clientOnly": true }
   ]
 }
