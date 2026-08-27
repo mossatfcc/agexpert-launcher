@@ -1,5 +1,5 @@
 ---
-name: agexpert-run
+name: agexpert-launcher-run
 description: Start AgExpert web apps, APIs, or the environment proxy, and diagnose failures to start — stuck NuGet restore, device-flow authentication prompts, ports already in use, a stale VS Code Extension Host, or missing launch profiles. Use when the user says an API or app will not start, hangs, or when they ask to run field, accounting, home, or any AgExpert API locally.
 ---
 

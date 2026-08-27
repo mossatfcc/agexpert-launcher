@@ -53,8 +53,8 @@ Describe 'JSON configuration' {
 
 Describe 'Copilot assets' {
     It 'gives every skill a name and description' -ForEach @(
-        @{ Skill = 'agexpert-run' }
-        @{ Skill = 'agexpert-maintain' }
+        @{ Skill = 'agexpert-launcher-run' }
+        @{ Skill = 'agexpert-launcher-maintain' }
     ) {
         $content = Get-Content (Join-Path $script:RepoRoot "copilot\skills\$Skill\SKILL.md") -Raw
         $content | Should -Match '(?m)^name:\s*\S+'

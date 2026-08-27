@@ -69,6 +69,23 @@ if (-not $SkipExtension) {
 
 # 4. Copilot agent and skills
 $copilotRoot = Join-Path $HOME '.copilot'
+
+# Remove previously installed launcher skills so renamed folders do not linger as orphans.
+$installedSkills = Join-Path $copilotRoot 'skills'
+if (Test-Path $installedSkills) {
+    $current = @(Get-ChildItem (Join-Path $sourceRoot 'copilot\skills') -Directory -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty Name)
+    $stale = Get-ChildItem $installedSkills -Directory |
+        Where-Object { $_.Name -like 'agexpert-*' -and $current -notcontains $_.Name }
+
+    foreach ($skill in $stale) {
+        if ($PSCmdlet.ShouldProcess($skill.FullName, 'Remove stale skill')) {
+            Write-Step "Removing stale skill $($skill.Name)"
+            Remove-Item $skill.FullName -Recurse -Force
+        }
+    }
+}
+
 foreach ($asset in @(
         @{ Source = 'copilot\agents'; Target = 'agents' }
         @{ Source = 'copilot\skills'; Target = 'skills' }

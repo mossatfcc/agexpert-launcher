@@ -88,8 +88,8 @@ attempting to start them fails with a clear message.
 
 | Load | When |
 |---|---|
-| `agexpert-run` | Starting something, or diagnosing a failure to start |
-| `agexpert-maintain` | Adding or changing an API, or cutting a release |
+| `agexpert-launcher-run` | Starting something, or diagnosing a failure to start |
+| `agexpert-launcher-maintain` | Adding or changing an API, or cutting a release |
 
 ## Safety
 

@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Test-AgExpertEnvironment` for one-call diagnosis of API startup problems.
 - `Repair-AgExpertProxy` to release or republish a single proxy service port.
 - Pester suite covering registry parity, command routing, extension terminals, and syntax.
-- `agexpert-launcher` Copilot agent plus `agexpert-run` and `agexpert-maintain` skills.
+- `agexpert-launcher` Copilot agent plus `agexpert-launcher-run` and `agexpert-launcher-maintain` skills.
 - `tools/install.ps1` for reproducible setup on a new machine.
 
 ### Changed

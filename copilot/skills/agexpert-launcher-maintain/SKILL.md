@@ -1,11 +1,21 @@
 ---
-name: agexpert-maintain
+name: agexpert-launcher-maintain
 description: Maintain the agexpert-launcher toolkit — add or edit an API or app in the shared registry, change launcher behaviour, run the Pester suite, bump the version, package the VS Code extension, and install a new build. Use when the user wants to add a new AgExpert API to the launcher, change how the launcher works, or release and reinstall the toolkit.
 ---
 
 # Maintaining the launcher toolkit
 
 Repository: `C:\AgExpert\agexpert-launcher`
+
+## Naming convention
+
+Every skill shipped by this toolkit is prefixed `agexpert-launcher-`, so its origin is obvious
+in a long, shared skill list. A new skill goes in `copilot/skills/agexpert-launcher-<verb>/`,
+its `name:` frontmatter matches the folder exactly, and it is added to both the agent's skill
+table and the `Copilot assets` test in `tests/Syntax.Tests.ps1`.
+
+The installer removes previously installed `agexpert-*` skills that no longer exist in the
+repository, so renames do not leave orphans behind in `~/.copilot/skills`.
 
 ## Golden rule
 
