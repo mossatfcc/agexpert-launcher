@@ -19,6 +19,7 @@ const vscodeStub = {
   window: {
     createTerminal(options) {
       const terminal = {
+        id: terminals.length,
         options,
         commands: [],
         sendText(command) {
@@ -31,6 +32,9 @@ const vscodeStub = {
     },
     registerUriHandler(handler) {
       vscodeStub.handler = handler;
+      return { dispose() {} };
+    },
+    onDidCloseTerminal() {
       return { dispose() {} };
     },
     showErrorMessage(message) {
@@ -62,14 +66,22 @@ const extension = require(
 );
 extension.activate({ subscriptions: { push() {} } });
 
-vscodeStub.handler.handleUri({ query: process.argv[2] || "" });
+// Each argument is one launch route, fired in order through the same extension
+// instance so cross-invocation terminal grouping can be observed.
+for (const route of process.argv.slice(2)) {
+  vscodeStub.handler.handleUri({ query: route });
+}
 
 process.stdout.write(
   JSON.stringify(
     terminals.map((terminal) => ({
+      id: terminal.id,
       name: terminal.options.name,
       cwd: terminal.options.cwd,
       command: terminal.commands[0],
+      parent: terminal.options.location
+        ? terminal.options.location.parentTerminal.id
+        : null,
       errors,
     })),
   ),

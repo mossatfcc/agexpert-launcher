@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Every terminal the launcher opens now joins one VS Code tab group. The proxy tab from
+  `agexpert start` (a separate URI invocation) splits off the app's client/server group instead
+  of opening ungrouped, and a later single launch joins the existing group. A fresh group starts
+  only once every launcher terminal is closed.
 - `Build-AgExpertRelease.ps1` runs Pester in a clean `-NoProfile` session, and the tests remove
   any already-loaded `AgExpert.Launcher` module before importing the repo copy, so a
   profile-imported module no longer collides ("Multiple script or manifest modules ... loaded").

@@ -71,4 +71,36 @@ Describe 'VS Code extension' {
         $result = node $script:HarnessPath 'launch=benchmarking%7Capi%7CTest' | ConvertFrom-Json
         $result.Count | Should -Be 0
     }
+
+    It 'groups the proxy tab with the app client and server' {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        # Mirrors `agexpert start`: the app (client + server) and the proxy arrive
+        # as two separate URI invocations, yet must land in one terminal group.
+        $result = node $script:HarnessPath 'launch=field%7Call' 'launch=proxy' | ConvertFrom-Json
+        $result.Count | Should -Be 3
+        $result[0].name | Should -Be 'field client'
+        $result[0].parent | Should -Be $null
+        $result[1].name | Should -Be 'field server'
+        $result[1].parent | Should -Be $result[0].id
+        $result[2].name | Should -Be 'proxy'
+        $result[2].parent | Should -Be $result[0].id
+    }
+
+    It 'joins a later single launch to the existing group' {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath 'launch=proxy' 'launch=field%7Capi%7CTest' | ConvertFrom-Json
+        $result.Count | Should -Be 2
+        $result[0].name | Should -Be 'proxy'
+        $result[0].parent | Should -Be $null
+        $result[1].name | Should -Be 'field api'
+        $result[1].parent | Should -Be $result[0].id
+    }
 }

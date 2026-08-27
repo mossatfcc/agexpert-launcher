@@ -60,18 +60,37 @@ function normalizeKey(value) {
     .toLowerCase();
 }
 
+// Every terminal the launcher opens joins one tab group. The first live terminal
+// is the group anchor; later launches (even from separate URI invocations, such as
+// the proxy tab of `agexpert start`) split off it so they land in the same group.
+// When every launcher terminal is closed, the next launch starts a fresh group.
+const launcherTerminals = [];
+
+function forgetTerminal(terminal) {
+  const index = launcherTerminals.indexOf(terminal);
+  if (index !== -1) {
+    launcherTerminals.splice(index, 1);
+  }
+}
+
+function groupAnchor() {
+  return launcherTerminals.length ? launcherTerminals[0] : undefined;
+}
+
 function createTerminal(name, cwd, color, icon, command, parentTerminal) {
+  const parent = parentTerminal || groupAnchor();
   const options = {
     name,
     cwd,
     color: new vscode.ThemeColor(color),
     iconPath: new vscode.ThemeIcon(icon),
   };
-  if (parentTerminal) {
-    options.location = { parentTerminal };
+  if (parent) {
+    options.location = { parentTerminal: parent };
   }
 
   const terminal = vscode.window.createTerminal(options);
+  launcherTerminals.push(terminal);
   terminal.sendText(command);
   terminal.show();
   return terminal;
@@ -187,6 +206,11 @@ function launch(name, target = "all", launchProfile) {
 }
 
 function activate(context) {
+  // Drop closed terminals so a fully closed group starts fresh on the next launch.
+  context.subscriptions.push(
+    vscode.window.onDidCloseTerminal((terminal) => forgetTerminal(terminal)),
+  );
+
   // Routes arrive as one encoded parameter: launch=<name>|<target>|<profile>
   context.subscriptions.push(
     vscode.window.registerUriHandler({
