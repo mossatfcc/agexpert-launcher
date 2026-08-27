@@ -132,15 +132,19 @@ try {
 
         if ($PSCmdlet.ShouldProcess($remoteUrl, 'Push initial commit')) {
             # The helper reads the token from the environment, keeping it out of argv and .git/config.
+            # The empty helper first clears inherited helpers so Credential Manager cannot answer instead.
             $env:AGEXPERT_GITHUB_TOKEN = $token
-            $helper = '!f() { echo username=x-access-token; echo password=$AGEXPERT_GITHUB_TOKEN; }; f'
-            git -c credential.helper=$helper push -u origin main
+            $env:AGEXPERT_GITHUB_USER = $user.login
+            $helper = '!f() { echo username=$AGEXPERT_GITHUB_USER; echo password=$AGEXPERT_GITHUB_TOKEN; }; f'
+
+            git -c credential.helper= -c credential.helper=$helper push -u origin main
             if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
         }
     }
     finally {
         Pop-Location
         Remove-Item Env:AGEXPERT_GITHUB_TOKEN -ErrorAction SilentlyContinue
+        Remove-Item Env:AGEXPERT_GITHUB_USER -ErrorAction SilentlyContinue
     }
 }
 finally {
