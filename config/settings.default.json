@@ -5,5 +5,6 @@
   "certificateDirectory": "~/.aspnet/https",
   "containerName": "agexpert-environment-proxy",
   "imageTag": "agexpert-environment-proxy:profile",
-  "launcherUri": "vscode://agexpert.launcher/launch"
+  "launcherUri": "vscode://agexpert.launcher/launch",
+  "defaultApp": null
 }

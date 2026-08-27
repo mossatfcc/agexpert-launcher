@@ -1,6 +1,7 @@
 BeforeAll {
     $script:RepoRoot = Split-Path $PSScriptRoot -Parent
     $script:ModulePath = Join-Path $script:RepoRoot 'src\module\AgExpert.Launcher\AgExpert.Launcher.psd1'
+    Get-Module AgExpert.Launcher | Remove-Module -Force -ErrorAction SilentlyContinue
     Import-Module $script:ModulePath -Force
 
     $script:Registry = (Get-Content (Join-Path $script:RepoRoot 'config\apis.json') -Raw | ConvertFrom-Json).apis

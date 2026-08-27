@@ -50,9 +50,14 @@ else {
 # 3. Tests
 if (-not $SkipTests) {
     Write-Step 'Running Pester'
-    $result = Invoke-Pester -Path (Join-Path $repoRoot 'tests') -PassThru -Output Detailed
-    if ($result.FailedCount -gt 0) {
-        throw "$($result.FailedCount) test(s) failed."
+    $testsPath = Join-Path $repoRoot 'tests'
+    # Run in a clean -NoProfile session so a profile-imported AgExpert.Launcher module cannot
+    # collide with the copy the tests import from the repo (Pester errors with "Multiple script
+    # or manifest modules named 'AgExpert.Launcher' are currently loaded" otherwise).
+    $command = "`$r = Invoke-Pester -Path '$testsPath' -PassThru -Output Detailed; if (`$r.FailedCount -gt 0) { exit 1 }"
+    pwsh -NoProfile -Command $command
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Pester reported test failures.'
     }
 }
 
