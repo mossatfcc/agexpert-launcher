@@ -116,11 +116,18 @@ try {
             git init -b main | Out-Null
         }
 
-        git add --all
-
-        git diff --cached --quiet
+        # Only bootstrap the very first commit. Never sweep unrelated working-tree changes
+        # into a generic message; that is the caller's job.
+        git rev-parse --verify HEAD *> $null
         if ($LASTEXITCODE -ne 0) {
-            git commit -m 'feat: package the AgExpert launcher as a portable toolkit' | Out-Null
+            git add --all
+            git commit -m 'chore: initial commit' | Out-Null
+        }
+        else {
+            $pending = git status --porcelain
+            if ($pending) {
+                Write-Warning 'Uncommitted changes were left alone. Commit them yourself, then re-run to push.'
+            }
         }
 
         if (git remote | Select-String -SimpleMatch 'origin') {
