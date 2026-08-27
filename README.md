@@ -14,17 +14,17 @@ Test-AgExpertEnvironment    # diagnose why something will not start
 
 ## Layout
 
-| Path | Purpose |
-|---|---|
-| `config/apis.json` | Single source of truth for API name, project directory, and proxy port |
-| `config/apps.json` | Web apps and their server launch profiles |
-| `config/settings.default.json` | Default machine paths, overridden per machine at install time |
-| `src/module/AgExpert.Launcher/` | PowerShell module — everything you run daily |
-| `src/extension/` | VS Code extension that opens dedicated terminal tabs |
-| `copilot/agents/` | Copilot agent definition |
-| `copilot/skills/` | Copilot skills for using and maintaining the toolkit |
-| `tests/` | Pester suite |
-| `tools/` | Install, release, and repo bootstrap scripts |
+| Path                            | Purpose                                                                |
+| ------------------------------- | ---------------------------------------------------------------------- |
+| `config/apis.json`              | Single source of truth for API name, project directory, and proxy port |
+| `config/apps.json`              | Web apps and their server launch profiles                              |
+| `config/settings.default.json`  | Default machine paths, overridden per machine at install time          |
+| `src/module/AgExpert.Launcher/` | PowerShell module — everything you run daily                           |
+| `src/extension/`                | VS Code extension that opens dedicated terminal tabs                   |
+| `copilot/agents/`               | Copilot agent definition                                               |
+| `copilot/skills/`               | Copilot skills for using and maintaining the toolkit                   |
+| `tests/`                        | Pester suite                                                           |
+| `tools/`                        | Install, release, and repo bootstrap scripts                           |
 
 Both the module and the extension read `config/apis.json`, so an API is defined once.
 
@@ -44,13 +44,13 @@ Preview the changes first with `-WhatIf`. Re-run the installer after pulling.
 
 ## Command grammar
 
-| Command | Result |
-|---|---|
-| `agexpert <app>` | Client watch + server tabs |
-| `agexpert <app> client` \| `server` | A single tab |
-| `agexpert <api> api [Profile]` | API tab, defaulting to the `Test` profile |
-| `agexpert proxy [start\|stop\|status\|restart\|migrate]` | Proxy container control |
-| `agexpert proxy <service> <start\|stop\|status>` | One proxy service |
+| Command                                                  | Result                                    |
+| -------------------------------------------------------- | ----------------------------------------- |
+| `agexpert <app>`                                         | Client watch + server tabs                |
+| `agexpert <app> client` \| `server`                      | A single tab                              |
+| `agexpert <api> api [Profile]`                           | API tab, defaulting to the `Test` profile |
+| `agexpert proxy [start\|stop\|status\|restart\|migrate]` | Proxy container control                   |
+| `agexpert proxy <service> <start\|stop\|status>`         | One proxy service                         |
 
 Products with a front end (`field`, `accounting`, `home`) start their client and server when
 named alone. API-only products require the explicit `api` suffix, so `agexpert mcCain` is an
