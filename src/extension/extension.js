@@ -155,7 +155,7 @@ function launchApp(configuration, name, target) {
       configuration.clientPath,
       "terminal.ansiCyan",
       "server",
-      `dotnet run --no-build --no-restore --project ${app.project} --launch-profile "${app.launchProfile}"`,
+      `dotnet run --no-restore --project ${app.project} --launch-profile "${app.launchProfile}"`,
     );
   }
 }

@@ -41,8 +41,9 @@ function Start-AgExpertApp {
     }
 
     $clientCommand = "ng build $($config.name) --watch"
-    # Routine startup reuses the shared binary; build explicitly after server changes.
-    $serverCommand = "dotnet run --no-build --no-restore --project $($config.project) --launch-profile `"$($config.launchProfile)`""
+    # Incremental build (no --no-build) self-heals a missing binary and picks up server
+    # source changes; --no-restore still skips the Azure Artifacts device-flow hang.
+    $serverCommand = "dotnet run --no-restore --project $($config.project) --launch-profile `"$($config.launchProfile)`""
 
     switch ($Target) {
         'client' {

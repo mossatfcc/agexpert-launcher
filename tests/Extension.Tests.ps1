@@ -49,6 +49,7 @@ Describe 'VS Code extension' {
         $result.Count | Should -Be 2
         $result[0].name | Should -Be 'field client'
         $result[1].name | Should -Be 'field server'
+        $result[1].command | Should -Be 'dotnet run --no-restore --project ../Server --launch-profile "Field"'
     }
 
     It 'creates only the server terminal when asked' {
