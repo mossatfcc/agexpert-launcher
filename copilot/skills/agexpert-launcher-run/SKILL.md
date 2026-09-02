@@ -102,10 +102,11 @@ opening a tab and lists the valid names. Pick one from that list.
 | Command | Compiles your changes |
 |---|---|
 | `dotnet run --no-restore` (APIs) | Yes |
-| `dotnet run --no-build --no-restore` (app servers) | No — build first |
+| `dotnet run --no-restore` (app servers) | Yes — incremental build self-heals a missing/stale binary |
 
 ## 5. Never do this
 
-- Do not add `--no-build` to API startup; it silently runs stale binaries.
+- Do not add `--no-build` to app or API startup; it silently runs stale binaries and fails
+  outright when the binary is missing (for example after a fresh checkout or restart).
 - Do not stop the whole proxy to free one port; release just that service.
 - Do not hand-write process or port checks — extend `Test-AgExpertEnvironment` instead.

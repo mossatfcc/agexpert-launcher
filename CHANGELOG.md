@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Set-AgExpertDefaultApp` / `Get-AgExpertDefaultApp` remember a default app in
   `~/.agexpert/launcher.settings.json`, so repeat `agexpert start` calls skip the prompt.
 
+### Changed
+
+- App servers start with `dotnet run --no-restore` (previously `--no-build --no-restore`), so
+  dotnet's incremental build self-heals a missing binary (for example after a restart or fresh
+  checkout) and picks up server source changes automatically, instead of failing with "cannot
+  find the file specified." `--no-restore` still skips the Azure Artifacts device-flow hang.
+
 ### Fixed
 
 - Every terminal the launcher opens is its own standalone VS Code tab. The app client and

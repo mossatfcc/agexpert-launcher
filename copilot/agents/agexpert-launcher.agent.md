@@ -93,8 +93,8 @@ the client running locally against the proxy and Test APIs:
 - **APIs run `dotnet run --no-restore`.** Source changes still compile. Restore is skipped
   because Azure Artifacts device-flow authentication otherwise blocks startup for 90 seconds
   per feed and then fails.
-- **Apps run `dotnet run --no-build --no-restore`**, reusing the shared binary. That does *not*
-  pick up server source changes; build explicitly after changing server code.
+- **Apps run `dotnet run --no-restore`** (like APIs): an incremental build self-heals a missing
+  binary and picks up server source changes, while `--no-restore` skips the device-flow hang.
 - **A local API and the proxy cannot share a port.** `Start-AgExpertApi` releases the proxy
   service first. Restore it later with `Repair-AgExpertProxy <name> -Restore`.
 - **Launcher URIs carry one encoded `launch` parameter.** Never add a second query parameter:
