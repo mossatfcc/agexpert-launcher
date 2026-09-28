@@ -146,6 +146,13 @@
       "defaultProfile": "Test"
     },
     {
+      "name": "elmers",
+      "proxyName": "Elmers API",
+      "port": 44366,
+      "directory": "AgExpert.Elmers/src/Api",
+      "defaultProfile": "Test"
+    },
+    {
       "name": "reports",
       "proxyName": "Reports API",
       "port": 44375,
