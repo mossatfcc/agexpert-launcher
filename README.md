@@ -70,6 +70,24 @@ APIs start with `dotnet run --no-restore`: your source changes are compiled, but
 restore is skipped so startup does not block on Azure Artifacts device-flow authentication.
 After changing package references, run `dotnet restore` once and authenticate.
 
+## Restarting an API
+
+When an API is already running and you want it to pick up code changes, restart it in one step:
+
+```powershell
+agexpert field api restart          # stop the running Field API, then rebuild + restart it
+agexpert accounting api restart UAT # same, but on the UAT launch profile
+```
+
+Restart works for any API in the registry. It stops the local `dotnet` process bound to that
+API's port, then hands off to a normal start — recompiling via `dotnet run` and opening a fresh
+terminal tab. The launch profile defaults to `Test`, exactly like a plain start; pass a profile
+to override it.
+
+If nothing is running on the port, restart simply starts the API. The environment proxy is never
+touched: when the proxy (not a local dotnet process) owns the port, restart leaves it alone and
+the start step releases the service the usual way.
+
 ## Requirements
 
 - PowerShell 7+
