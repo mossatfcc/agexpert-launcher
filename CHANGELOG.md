@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `agexpert <api> api restart [Profile]` and `Restart-AgExpertApi` stop the local API process
+  bound to the API's port, then rebuild and restart it through `Start-AgExpertApi`. Works for
+  any API in the registry and leaves the environment proxy untouched.
+
 ## [0.2.3] - 2026-09-02
 
 ### Added

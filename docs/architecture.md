@@ -57,6 +57,7 @@ The `agexpert` alias routes to `Invoke-AgExpert`, which interprets your words:
 
 - **`agexpert field`** → front-end app → client + server
 - **`agexpert mcCain api [Profile]`** → API-only product (requires the `api` suffix)
+- **`agexpert field api restart [Profile]`** → stop the running API, then rebuild and restart it
 - **`agexpert start [app]`** → whole environment (client + server + proxy), using the saved
   `defaultApp` when omitted
 - **`agexpert proxy [service] [action]`** → the Docker proxy

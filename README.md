@@ -52,6 +52,7 @@ Preview the changes first with `-WhatIf`. Re-run the installer after pulling.
 | `agexpert <app>`                                         | Client watch + server tabs                |
 | `agexpert <app> client` \| `server`                      | A single tab                              |
 | `agexpert <api> api [Profile]`                           | API tab, defaulting to the `Test` profile |
+| `agexpert <api> api restart [Profile]`                   | Stop the running API, then rebuild + restart it |
 | `agexpert proxy [start\|stop\|status\|restart\|migrate]` | Proxy container control                   |
 | `agexpert proxy <service> <start\|stop\|status>`         | One proxy service                         |
 
