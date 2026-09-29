@@ -7,6 +7,7 @@ BeforeAll {
 Describe 'Invoke-AgExpert routing' {
     BeforeEach {
         Mock -ModuleName AgExpert.Launcher Start-AgExpertApi { }
+        Mock -ModuleName AgExpert.Launcher Restart-AgExpertApi { }
         Mock -ModuleName AgExpert.Launcher Start-AgExpertApp { }
         Mock -ModuleName AgExpert.Launcher Start-AgExpertProxy { }
         Mock -ModuleName AgExpert.Launcher Open-AgExpertProxyTerminal { }
@@ -38,6 +39,19 @@ Describe 'Invoke-AgExpert routing' {
         Invoke-AgExpert field api UAT
         Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApi -Times 1 -Exactly `
             -ParameterFilter { $LaunchProfile -eq 'UAT' }
+    }
+
+    It 'routes the restart suffix to the API restarter' {
+        Invoke-AgExpert field api restart
+        Should -Invoke -ModuleName AgExpert.Launcher Restart-AgExpertApi -Times 1 -Exactly `
+            -ParameterFilter { $Name -eq 'field' }
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApi -Times 0 -Exactly
+    }
+
+    It 'passes a launch profile through a restart' {
+        Invoke-AgExpert field api restart UAT
+        Should -Invoke -ModuleName AgExpert.Launcher Restart-AgExpertApi -Times 1 -Exactly `
+            -ParameterFilter { $Name -eq 'field' -and $LaunchProfile -eq 'UAT' }
     }
 
     It 'requires the api suffix for API-only products' {
@@ -161,5 +175,89 @@ Describe 'Start-AgExpertApp' {
 
     It 'rejects an unknown app' {
         { Start-AgExpertApp -App nonexistent } | Should -Throw '*Unknown AgExpert app*'
+    }
+}
+
+Describe 'Restart-AgExpertApi' {
+    BeforeEach {
+        Mock -ModuleName AgExpert.Launcher Stop-AgExpertApiProcess { $true }
+        Mock -ModuleName AgExpert.Launcher Start-AgExpertApi { }
+    }
+
+    It 'stops the running API on its port before restarting' {
+        Restart-AgExpertApi field
+        Should -Invoke -ModuleName AgExpert.Launcher Stop-AgExpertApiProcess -Times 1 -Exactly `
+            -ParameterFilter { $Port -eq 44315 }
+    }
+
+    It 'rebuilds and restarts through Start-AgExpertApi' {
+        Restart-AgExpertApi field
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApi -Times 1 -Exactly `
+            -ParameterFilter { $Name -eq 'field' }
+    }
+
+    It 'passes an explicit launch profile through to the restart' {
+        Restart-AgExpertApi field UAT
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApi -Times 1 -Exactly `
+            -ParameterFilter { $LaunchProfile -eq 'UAT' }
+    }
+
+    It 'works for any API in the registry' {
+        Restart-AgExpertApi accounting
+        Should -Invoke -ModuleName AgExpert.Launcher Stop-AgExpertApiProcess -Times 1 -Exactly `
+            -ParameterFilter { $Port -eq 44325 }
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApi -Times 1 -Exactly `
+            -ParameterFilter { $Name -eq 'accounting' }
+    }
+
+    It 'restarts even when nothing was running' {
+        Mock -ModuleName AgExpert.Launcher Stop-AgExpertApiProcess { $false }
+        Restart-AgExpertApi field
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApi -Times 1 -Exactly
+    }
+
+    It 'rejects a proxy-only product' {
+        { Restart-AgExpertApi benchmarking } | Should -Throw '*no local project*'
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApi -Times 0 -Exactly
+    }
+
+    It 'rejects an unknown product' {
+        { Restart-AgExpertApi nonexistent } | Should -Throw '*Unknown AgExpert API*'
+    }
+}
+
+Describe 'Stop-AgExpertApiProcess' {
+    It 'stops a local dotnet listener and reports success' {
+        InModuleScope AgExpert.Launcher {
+            Mock Get-AgExpertPortOwner {
+                [pscustomobject]@{ Port = 44315; ProcessId = 4242; ProcessName = 'dotnet' }
+            }
+            Mock Stop-Process { }
+
+            Stop-AgExpertApiProcess -Port 44315 | Should -BeTrue
+            Should -Invoke Stop-Process -Times 1 -Exactly -ParameterFilter { $Id -eq 4242 }
+        }
+    }
+
+    It 'leaves a non-dotnet listener (the proxy) alone' {
+        InModuleScope AgExpert.Launcher {
+            Mock Get-AgExpertPortOwner {
+                [pscustomobject]@{ Port = 44315; ProcessId = 10; ProcessName = 'com.docker.backend' }
+            }
+            Mock Stop-Process { }
+
+            Stop-AgExpertApiProcess -Port 44315 | Should -BeFalse
+            Should -Invoke Stop-Process -Times 0 -Exactly
+        }
+    }
+
+    It 'does nothing when the port is free' {
+        InModuleScope AgExpert.Launcher {
+            Mock Get-AgExpertPortOwner { }
+            Mock Stop-Process { }
+
+            Stop-AgExpertApiProcess -Port 44315 | Should -BeFalse
+            Should -Invoke Stop-Process -Times 0 -Exactly
+        }
     }
 }

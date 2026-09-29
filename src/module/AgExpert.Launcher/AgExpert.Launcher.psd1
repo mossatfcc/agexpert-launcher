@@ -15,6 +15,7 @@
         'Open-AgExpertLauncherUri'
         'Repair-AgExpertProxy'
         'Resolve-AgExpertProxyService'
+        'Restart-AgExpertApi'
         'Set-AgExpertDefaultApp'
         'Set-AgExpertProxyService'
         'Show-AgExpertProxyStatus'

@@ -60,6 +60,7 @@ External dependencies, owned elsewhere and never vendored: the proxy image in
 | `agexpert <app>` | Client watch + server tabs |
 | `agexpert <app> client` \| `server` | One tab |
 | `agexpert <api> api [Profile]` | API tab; profile defaults to `Test` |
+| `agexpert <api> api restart [Profile]` | Stop the running API, then rebuild and restart it |
 | `agexpert proxy [start\|stop\|status\|restart\|rebuild\|migrate]` | Proxy container |
 | `agexpert proxy <service> <start\|stop\|status>` | One proxy service |
 

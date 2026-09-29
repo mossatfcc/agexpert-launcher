@@ -9,6 +9,7 @@ function Invoke-AgExpert {
             agexpert field
             agexpert field api
             agexpert field api UAT
+            agexpert field api restart
             agexpert proxy status
             agexpert --version
     #>
@@ -19,6 +20,7 @@ function Invoke-AgExpert {
     $first = if ($Arguments.Count -ge 1) { $Arguments[0] } else { $null }
     $second = if ($Arguments.Count -ge 2) { $Arguments[1] } else { $null }
     $third = if ($Arguments.Count -ge 3) { $Arguments[2] } else { $null }
+    $fourth = if ($Arguments.Count -ge 4) { $Arguments[3] } else { $null }
 
     if ($first -in @('--version', '-v', 'version')) {
         Write-Host "AgExpert Launcher $(Get-AgExpertVersion)"
@@ -47,6 +49,11 @@ function Invoke-AgExpert {
     }
 
     if ($second -eq 'api') {
+        if ($third -eq 'restart') {
+            Restart-AgExpertApi -Name $first -LaunchProfile $fourth
+            return
+        }
+
         Start-AgExpertApi -Name $first -LaunchProfile $third
         return
     }
