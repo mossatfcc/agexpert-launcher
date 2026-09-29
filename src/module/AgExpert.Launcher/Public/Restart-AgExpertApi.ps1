@@ -29,6 +29,8 @@ function Restart-AgExpertApi {
         throw "The $($config.name) API has no local project in this repository; it is available through the environment proxy only."
     }
 
+    if (-not $PSCmdlet.ShouldProcess("$($config.name) API", 'restart')) { return }
+
     if (Stop-AgExpertApiProcess -Port $config.port) {
         Write-Verbose "Stopped the running $($config.name) API on port $($config.port)."
     }
