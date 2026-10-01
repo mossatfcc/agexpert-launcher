@@ -13,6 +13,7 @@ agexpert start accounting     # whole dev environment for a specific app
 agexpert field                # client + server
 agexpert field api            # API on the Test profile
 agexpert field api UAT        # explicit profile
+agexpert field api restart    # stop the running API, then rebuild + restart it
 agexpert proxy status
 ```
 
@@ -103,6 +104,7 @@ opening a tab and lists the valid names. Pick one from that list.
 |---|---|
 | `dotnet run --no-restore` (APIs) | Yes |
 | `dotnet run --no-restore` (app servers) | Yes — incremental build self-heals a missing/stale binary |
+| `agexpert <api> api restart [Profile]` | Yes — stops the running API, then rebuilds and restarts it |
 
 ## 5. Never do this
 
