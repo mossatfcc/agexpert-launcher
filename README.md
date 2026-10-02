@@ -51,6 +51,8 @@ Preview the changes first with `-WhatIf`. Re-run the installer after pulling.
 | -------------------------------------------------------- | ----------------------------------------- |
 | `agexpert <app>`                                         | Client watch + server tabs                |
 | `agexpert <app> client` \| `server`                      | A single tab                              |
+| `agexpert <app> [client] <Configuration>`                | Client built with an Angular configuration |
+| `agexpert start [app] [Configuration]`                   | Client + server + proxy                   |
 | `agexpert <api> api [Profile]`                           | API tab, defaulting to the `Test` profile |
 | `agexpert <api> api restart [Profile]`                   | Stop the running API, then rebuild + restart it |
 | `agexpert proxy [start\|stop\|status\|restart\|migrate]` | Proxy container control                   |
@@ -59,6 +61,30 @@ Preview the changes first with `-WhatIf`. Re-run the installer after pulling.
 Products with a front end (`field`, `accounting`, `home`) start their client and server when
 named alone. API-only products require the explicit `api` suffix, so `agexpert mcCain` is an
 error that tells you to run `agexpert mcCain api`.
+
+## Angular build configurations
+
+The client watch accepts one of four build configurations, matching the VS Code
+`buildConfiguration` task input:
+
+| Configuration | Client command                                   |
+| ------------- | ------------------------------------------------ |
+| `default`     | `ng build <app> --watch` (angular.json default)  |
+| `localized`   | `ng build <app> --watch --configuration localized` |
+| `development` | `ng build <app> --watch --configuration development` |
+| `production`  | `ng build <app> --watch --configuration production` |
+
+The word can go anywhere after the app name:
+
+```powershell
+agexpert field localized              # client + server, localized client build
+agexpert field client production      # client only
+agexpert start field development      # client + server + proxy
+agexpert start localized              # saved default app
+```
+
+The server ignores the configuration. `Start-AgExpertApp` and `Start-AgExpertEnvironment` take
+it as `-Configuration`, and the VS Code **Launch** command asks for it after you pick an app.
 
 ## Launch profiles
 

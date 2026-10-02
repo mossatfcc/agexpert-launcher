@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Angular build configurations for the app client: `default`, `localized`, `development`, and
+  `production`. Add the word after the app (`agexpert field localized`,
+  `agexpert field client production`, `agexpert start field development`) or pass
+  `-Configuration` to `Start-AgExpertApp` / `Start-AgExpertEnvironment`. Non-default values add
+  `--configuration <name>` to `ng build --watch` (or `ng serve` for client-only apps); the
+  extension's Launch command prompts for one after you pick an app.
 - `agexpert <api> api restart [Profile]` and `Restart-AgExpertApi` stop the local API process
   bound to the API's port, then rebuild and restart it through `Start-AgExpertApi`. Works for
   any API in the registry and leaves the environment proxy untouched.

@@ -4,6 +4,14 @@ const os = require("os");
 const path = require("path");
 
 const TARGETS = ["all", "client", "server", "api"];
+const BUILD_CONFIGURATIONS = ["default", "localized", "development", "production"];
+
+// 'default' passes no flag so angular.json's defaultConfiguration applies.
+function configurationArgument(buildConfiguration) {
+  return buildConfiguration && buildConfiguration !== "default"
+    ? ` --configuration ${buildConfiguration}`
+    : "";
+}
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
@@ -111,7 +119,7 @@ function launchApi(configuration, name, launchProfile) {
   );
 }
 
-function launchApp(configuration, name, target) {
+function launchApp(configuration, name, target, buildConfiguration) {
   const key = normalizeKey(name);
   const app = configuration.apps.find(
     (entry) => normalizeKey(entry.name) === key,
@@ -121,6 +129,15 @@ function launchApp(configuration, name, target) {
     vscode.window.showErrorMessage(`AgExpert Launcher: unknown app '${name}'.`);
     return;
   }
+
+  const buildConfigurationKey = (buildConfiguration || "default").toLowerCase();
+  if (!BUILD_CONFIGURATIONS.includes(buildConfigurationKey)) {
+    vscode.window.showErrorMessage(
+      `AgExpert Launcher: unknown build configuration '${buildConfiguration}'. Valid: ${BUILD_CONFIGURATIONS.join(", ")}.`,
+    );
+    return;
+  }
+  const buildArgument = configurationArgument(buildConfigurationKey);
 
   if (app.clientOnly) {
     if (target === "server") {
@@ -134,7 +151,7 @@ function launchApp(configuration, name, target) {
       configuration.clientPath,
       "terminal.ansiGreen",
       "browser",
-      `ng serve ${app.name}`,
+      `ng serve ${app.name}${buildArgument}`,
     );
     return;
   }
@@ -145,7 +162,7 @@ function launchApp(configuration, name, target) {
       configuration.clientPath,
       "terminal.ansiGreen",
       "browser",
-      `ng build ${app.name} --watch`,
+      `ng build ${app.name} --watch${buildArgument}`,
     );
   }
 
@@ -160,7 +177,9 @@ function launchApp(configuration, name, target) {
   }
 }
 
-function launch(name, target = "all", launchProfile) {
+// The third route slot is the launch profile for an API and the Angular build
+// configuration for an app.
+function launch(name, target = "all", option) {
   const configuration = loadConfiguration();
 
   if (name === "proxy") {
@@ -174,15 +193,15 @@ function launch(name, target = "all", launchProfile) {
     return;
   }
   if (target === "api") {
-    launchApi(configuration, name, launchProfile);
+    launchApi(configuration, name, option);
     return;
   }
 
-  launchApp(configuration, name, target);
+  launchApp(configuration, name, target, option);
 }
 
 function activate(context) {
-  // Routes arrive as one encoded parameter: launch=<name>|<target>|<profile>
+  // Routes arrive as one encoded parameter: launch=<name>|<target>|<profile or build configuration>
   context.subscriptions.push(
     vscode.window.registerUriHandler({
       handleUri(uri) {
@@ -223,7 +242,17 @@ function activate(context) {
           launch(choice);
           return;
         }
-        launch(choice.label, choice.description === "api" ? "api" : "all");
+        if (choice.description === "api") {
+          launch(choice.label, "api");
+          return;
+        }
+
+        const buildConfiguration = await vscode.window.showQuickPick(
+          BUILD_CONFIGURATIONS,
+          { placeHolder: "Select the Angular build configuration" },
+        );
+        if (!buildConfiguration) return;
+        launch(choice.label, "all", buildConfiguration);
       },
     ),
   );

@@ -8,16 +8,20 @@ function Start-AgExpertEnvironment {
             the saved default app is used; if none is set, an error explains that the caller should
             ask the user and run Set-AgExpertDefaultApp. Unless -SkipReadiness is given, it then
             polls until the proxy and app server respond and reports whether the environment is
-            green and ready.
+            green and ready. -Configuration selects the Angular build configuration for the client.
         .EXAMPLE
             Start-AgExpertEnvironment
         .EXAMPLE
             Start-AgExpertEnvironment field
+        .EXAMPLE
+            Start-AgExpertEnvironment field -Configuration localized
     #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([psobject])]
     param(
         [Parameter(Position = 0)][string]$App,
+        [Parameter(Position = 1)][ValidateSet('default', 'localized', 'development', 'production')]
+        [string]$Configuration = 'default',
         [int]$TimeoutSeconds = 180,
         [switch]$SkipReadiness
     )
@@ -41,7 +45,7 @@ function Start-AgExpertEnvironment {
 
     if (-not $PSCmdlet.ShouldProcess($config.name, 'start dev environment')) { return }
 
-    Start-AgExpertApp -App $config.name -Target all
+    Start-AgExpertApp -App $config.name -Target all -Configuration $Configuration
     Open-AgExpertProxyTerminal
 
     if ($SkipReadiness) { return }

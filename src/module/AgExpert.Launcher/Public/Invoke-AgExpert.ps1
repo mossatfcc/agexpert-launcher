@@ -7,7 +7,9 @@ function Invoke-AgExpert {
             API-only products require the explicit api suffix.
         .EXAMPLE
             agexpert field
-            agexpert field api
+            agexpert field localized
+            agexpert field client production
+            agexpert start field development            agexpert field api
             agexpert field api UAT
             agexpert field api restart
             agexpert proxy status
@@ -44,7 +46,9 @@ function Invoke-AgExpert {
     }
 
     if ($first -eq 'start') {
-        Start-AgExpertEnvironment -App $second
+        $startArguments = Split-AgExpertBuildConfiguration $Arguments[1..($Arguments.Count)]
+        $startApp = $startArguments.Remaining | Select-Object -First 1
+        Start-AgExpertEnvironment -App $startApp -Configuration $startArguments.Configuration
         return
     }
 
@@ -60,8 +64,10 @@ function Invoke-AgExpert {
 
     $appNames = Get-AgExpertAppRegistry | Select-Object -ExpandProperty name
     if ($appNames -contains $first) {
-        $target = if ($second) { $second } else { 'all' }
-        Start-AgExpertApp -App $first -Target $target
+        $appArguments = Split-AgExpertBuildConfiguration $Arguments[1..($Arguments.Count)]
+        $target = $appArguments.Remaining | Select-Object -First 1
+        if (-not $target) { $target = 'all' }
+        Start-AgExpertApp -App $first -Target $target -Configuration $appArguments.Configuration
         return
     }
 

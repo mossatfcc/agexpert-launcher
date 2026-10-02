@@ -32,6 +32,15 @@ Describe 'Start-AgExpertEnvironment' {
             -ParameterFilter { $App -eq 'accounting' }
     }
 
+    It 'passes the build configuration through to the app client' {
+        Mock -ModuleName AgExpert.Launcher Get-AgExpertDefaultApp { 'field' }
+
+        Start-AgExpertEnvironment -Configuration localized | Out-Null
+
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApp -Times 1 -Exactly `
+            -ParameterFilter { $App -eq 'field' -and $Configuration -eq 'localized' }
+    }
+
     It 'returns the readiness report' {
         Mock -ModuleName AgExpert.Launcher Get-AgExpertDefaultApp { 'field' }
 
