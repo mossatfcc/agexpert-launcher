@@ -56,9 +56,11 @@ places. `config/settings.default.json` holds defaults, overlaid by machine setti
 The `agexpert` alias routes to `Invoke-AgExpert`, which interprets your words:
 
 - **`agexpert field`** → front-end app → client + server
+- **`agexpert field [client] localized`** → same, with an Angular build configuration
+  (`default`, `localized`, `development`, `production`) for the client
 - **`agexpert mcCain api [Profile]`** → API-only product (requires the `api` suffix)
 - **`agexpert field api restart [Profile]`** → stop the running API, then rebuild and restart it
-- **`agexpert start [app]`** → whole environment (client + server + proxy), using the saved
+- **`agexpert start [app] [Configuration]`** → whole environment (client + server + proxy), using the saved
   `defaultApp` when omitted
 - **`agexpert proxy [service] [action]`** → the Docker proxy
 - **`agexpert --version`** (also `-v` / `version`) → report the installed build
@@ -73,8 +75,11 @@ The module never spawns terminals; instead `Open-AgExpertLauncherUri` calls `cod
 **one encoded parameter**:
 
 ```
-vscode://agexpert.launcher/launch?launch=<name>|<target>|<profile>
+vscode://agexpert.launcher/launch?launch=<name>|<target>|<option>
 ```
+
+`<option>` is the launch profile for an API and the Angular build configuration for an app
+(omitted for `default`).
 
 Everything travels in that single `launch` parameter specifically because `code.cmd` splits on `&` —
 a second query parameter would truncate the route.

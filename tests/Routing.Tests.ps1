@@ -86,7 +86,33 @@ Describe 'Invoke-AgExpert routing' {
     It 'starts the dev environment for an explicitly named app' {
         Invoke-AgExpert start accounting
         Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertEnvironment -Times 1 -Exactly `
-            -ParameterFilter { $App -eq 'accounting' }
+            -ParameterFilter { $App -eq 'accounting' -and $Configuration -eq 'default' }
+    }
+
+    It 'routes <Command> to Start-AgExpertEnvironment with app <App> and <Configuration>' -ForEach @(
+        @{ Command = @('start', 'field', 'localized'); App = 'field'; Configuration = 'localized' }
+        @{ Command = @('start', 'production'); App = $null; Configuration = 'production' }
+        @{ Command = @('start', 'development', 'home'); App = 'home'; Configuration = 'development' }
+    ) {
+        $expectedApp = "$App"
+        $expectedConfiguration = $Configuration
+        Invoke-AgExpert @Command
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertEnvironment -Times 1 -Exactly `
+            -ParameterFilter { "$App" -eq $expectedApp -and $Configuration -eq $expectedConfiguration }
+    }
+
+    It 'routes <Command> to Start-AgExpertApp with <Target> and <Configuration>' -ForEach @(
+        @{ Command = @('field'); Target = 'all'; Configuration = 'default' }
+        @{ Command = @('field', 'localized'); Target = 'all'; Configuration = 'localized' }
+        @{ Command = @('field', 'client', 'production'); Target = 'client'; Configuration = 'production' }
+        @{ Command = @('field', 'development', 'client'); Target = 'client'; Configuration = 'development' }
+        @{ Command = @('field', 'default'); Target = 'all'; Configuration = 'default' }
+    ) {
+        $expectedTarget = $Target
+        $expectedConfiguration = $Configuration
+        Invoke-AgExpert @Command
+        Should -Invoke -ModuleName AgExpert.Launcher Start-AgExpertApp -Times 1 -Exactly `
+            -ParameterFilter { $App -eq 'field' -and $Target -eq $expectedTarget -and $Configuration -eq $expectedConfiguration }
     }
 
     It 'prints the version for <Flag> without launching anything' -ForEach @(
@@ -164,9 +190,31 @@ Describe 'Start-AgExpertApp' {
         @{ App = 'field'; Target = 'server'; Route = 'field|server' }
         @{ App = 'accounting'; Target = 'client'; Route = 'accounting|client' }
     ) {
+        $expectedRoute = $Route
         Start-AgExpertApp -App $App -Target $Target
         Should -Invoke -ModuleName AgExpert.Launcher Open-AgExpertLauncherUri -Times 1 -Exactly `
-            -ParameterFilter { $Route -eq $Route }
+            -ParameterFilter { $Route -eq $expectedRoute }
+    }
+
+    It 'routes the <Configuration> build configuration as <Route>' -ForEach @(
+        @{ Configuration = 'default'; Route = 'field|all' }
+        @{ Configuration = 'localized'; Route = 'field|all|localized' }
+        @{ Configuration = 'development'; Route = 'field|all|development' }
+        @{ Configuration = 'production'; Route = 'field|all|production' }
+    ) {
+        $expectedRoute = $Route
+        Start-AgExpertApp -App field -Configuration $Configuration
+        Should -Invoke -ModuleName AgExpert.Launcher Open-AgExpertLauncherUri -Times 1 -Exactly `
+            -ParameterFilter { $Route -eq $expectedRoute }
+    }
+
+    It 'rejects an unknown build configuration' {
+        { Start-AgExpertApp -App field -Configuration staging } | Should -Throw
+    }
+
+    It 'warns that a server-only start ignores the build configuration' {
+        Start-AgExpertApp -App field -Target server -Configuration localized -WarningVariable warnings -WarningAction SilentlyContinue
+        $warnings | Should -BeLike '*client only*'
     }
 
     It 'refuses to start a server for a client-only app' {

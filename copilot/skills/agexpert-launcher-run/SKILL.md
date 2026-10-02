@@ -10,7 +10,10 @@ description: Start AgExpert web apps, APIs, or the environment proxy, and diagno
 ```powershell
 agexpert start                # whole dev environment for the saved default app
 agexpert start accounting     # whole dev environment for a specific app
+agexpert start field localized  # ...with an Angular build configuration
 agexpert field                # client + server
+agexpert field production     # client + server, production client build
+agexpert field client development  # client only, development build
 agexpert field api            # API on the Test profile
 agexpert field api UAT        # explicit profile
 agexpert field api restart    # stop the running API, then rebuild + restart it
@@ -18,6 +21,9 @@ agexpert proxy status
 ```
 
 The `api` suffix is mandatory for API-only products. `agexpert mcCain` is an error by design.
+
+Client build configurations are `default` (no flag, angular.json default), `localized`,
+`development`, and `production`. The word may appear anywhere after the app; the server ignores it.
 
 ### Start the whole dev environment
 

@@ -63,6 +63,44 @@ Describe 'VS Code extension' {
         $result[0].name | Should -Be 'field server'
     }
 
+    It 'builds the client with the <Configuration> configuration' -ForEach @(
+        @{ Configuration = ''; Command = 'ng build field --watch' }
+        @{ Configuration = '%7Cdefault'; Command = 'ng build field --watch' }
+        @{ Configuration = '%7Clocalized'; Command = 'ng build field --watch --configuration localized' }
+        @{ Configuration = '%7Cdevelopment'; Command = 'ng build field --watch --configuration development' }
+        @{ Configuration = '%7Cproduction'; Command = 'ng build field --watch --configuration production' }
+    ) {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath "launch=field%7Call$Configuration" | ConvertFrom-Json
+        $result.Count | Should -Be 2
+        $result[0].command | Should -Be $Command
+        $result[1].command | Should -Be 'dotnet run --no-restore --project ../Server --launch-profile "Field"'
+    }
+
+    It 'serves a client-only app with the requested configuration' {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath 'launch=gallery%7Call%7Cdevelopment' | ConvertFrom-Json
+        $result[0].command | Should -Be 'ng serve gallery --configuration development'
+    }
+
+    It 'refuses an unknown build configuration' {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath 'launch=field%7Call%7Cstaging' | ConvertFrom-Json
+        $result.Count | Should -Be 0
+    }
+
     It 'reports an error for a proxy-only API' {
         if (-not $script:NodeAvailable) {
             Set-ItResult -Skipped -Because 'node is not available'
