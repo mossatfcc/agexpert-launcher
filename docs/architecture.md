@@ -103,7 +103,7 @@ tab** (no grouping or splitting). This is the layer that actually runs `dotnet r
 
 - **Tooling** — `tools/install.ps1` deploys the module + agent + skills + settings and installs the
   newest `.vsix`; `tools/Build-AgExpertRelease.ps1` runs the analyzer + tests, syncs config into the
-  extension, bumps both versions together, and packages/installs the `.vsix` (the version bump is what
+  extension, bumps both versions together, packages the `.vsix`, and with `-Install` runs the installer (the version bump is what
   forces VS Code to load new code).
 - **Tests** — Pester suites (`Registry`, `Routing`, `Environment`, `Extension`, `Syntax`) plus a Node
   harness that loads `extension.js` against a mocked VS Code API.

@@ -47,10 +47,14 @@ Write-Step "Writing settings to $settingsPath"
 if ($PSCmdlet.ShouldProcess($settingsPath, 'Write machine settings')) {
     New-Item -Path $settingsDirectory -ItemType Directory -Force | Out-Null
 
-    $settings = [ordered]@{
-        repoRoot             = $RepoRoot -replace '\\', '/'
-        certificateDirectory = $CertificateDirectory -replace '\\', '/'
+    # Merge into existing settings so saved preferences such as defaultApp survive a reinstall.
+    $settings = [ordered]@{}
+    if (Test-Path $settingsPath) {
+        (Get-Content $settingsPath -Raw | ConvertFrom-Json).PSObject.Properties |
+            ForEach-Object { $settings[$_.Name] = $_.Value }
     }
+    $settings['repoRoot'] = $RepoRoot -replace '\\', '/'
+    $settings['certificateDirectory'] = $CertificateDirectory -replace '\\', '/'
     $settings | ConvertTo-Json | Set-Content -Path $settingsPath -Encoding utf8
 }
 

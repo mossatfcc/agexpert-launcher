@@ -92,7 +92,11 @@ Symptom: the terminal tab runs an old command, or a launcher URI opens the wrong
 Editing files under `~/.vscode/extensions/` does nothing until the host restarts.
 
 Fix: run **Developer: Restart Extension Host** from the Command Palette, or install a fresh
-build with `tools/Build-AgExpertRelease.ps1`.
+build with `tools/Build-AgExpertRelease.ps1 -BumpPatch -Install`.
+
+If a new option is ignored (for example the client still runs plain `ng build <app> --watch`),
+the installed build is stale. Compare `Get-AgExpertVersion` and
+`code --list-extensions --show-versions | Select-String agexpert` with the repository manifest.
 
 ### `'target' is not recognized as an internal or external command`
 

@@ -126,8 +126,40 @@ the start step releases the service the usual way.
 ```powershell
 Invoke-Pester ./tests
 Invoke-ScriptAnalyzer -Recurse ./src/module
-./tools/Build-AgExpertRelease.ps1 -BumpPatch
 ```
+
+## Releasing and installing a new build
+
+Run the release from the launcher checkout (`C:\AgExpert\agexpert-launcher`) after the change
+has merged:
+
+```powershell
+cd C:\AgExpert\agexpert-launcher
+git checkout main
+git pull
+./tools/Build-AgExpertRelease.ps1 -BumpPatch -Install   # or -BumpMinor / -BumpMajor
+```
+
+The script runs the analyzer and Pester, syncs `config/` into the extension, bumps the module
+manifest and extension `package.json` together, and packages the `.vsix`. `-Install` then runs
+`tools/install.ps1`, which updates the PowerShell module, the VS Code extension, and the Copilot
+agent and skills, keeping your existing `~/.agexpert/launcher.settings.json` preferences.
+**Without `-Install` nothing is installed.**
+
+Then load the new build:
+
+1. Open a new terminal (or run `Import-Module AgExpert.Launcher -Force`).
+2. In VS Code, run **Developer: Restart Extension Host**.
+3. Confirm both versions match the repository manifest:
+
+   ```powershell
+   agexpert --version
+   code --list-extensions --show-versions | Select-String agexpert
+   ```
+
+Finally, commit the version bump (`AgExpert.Launcher.psd1` and `src/extension/package.json`)
+with a `CHANGELOG.md` entry and open a PR. An uncommitted bump lets the installed build drift
+ahead of the repository, and the next release then looks like a downgrade.
 
 ## License
 
