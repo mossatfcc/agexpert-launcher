@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `Build-AgExpertRelease.ps1 -Install` now runs `tools/install.ps1`, so the PowerShell module,
+  agent, and skills are updated along with the extension. Previously only the `.vsix` was
+  installed, leaving the module on an older build (new options such as build configurations were
+  silently ignored).
+- `tools/install.ps1` merges into `~/.agexpert/launcher.settings.json` instead of overwriting
+  it, so saved preferences such as `defaultApp` survive a reinstall.
+- Realigned the repository version (0.4.1) with builds that had been installed from uncommitted
+  version bumps.
+
 ### Added
 
 - Angular build configurations for the app client: `default`, `localized`, `development`, and

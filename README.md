@@ -126,7 +126,7 @@ the start step releases the service the usual way.
 ```powershell
 Invoke-Pester ./tests
 Invoke-ScriptAnalyzer -Recurse ./src/module
-./tools/Build-AgExpertRelease.ps1 -BumpPatch
+./tools/Build-AgExpertRelease.ps1 -BumpPatch -Install   # -Install updates module, extension, agent, and skills
 ```
 
 ## License

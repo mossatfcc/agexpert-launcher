@@ -4,7 +4,8 @@
     .DESCRIPTION
         Runs the analyzer and test suite, syncs the shared config into the extension, bumps the
         module manifest and extension versions together, and packages a .vsix. Bumping the
-        extension version is what forces VS Code to load new extension code.
+        extension version is what forces VS Code to load new extension code. -Install then runs
+        tools/install.ps1 so the module, extension, agent, and skills are all updated.
     .EXAMPLE
         ./tools/Build-AgExpertRelease.ps1 -BumpPatch
         ./tools/Build-AgExpertRelease.ps1 -BumpMinor -Install
@@ -140,10 +141,18 @@ if ($PSCmdlet.ShouldProcess($vsixPath, 'Package extension')) {
     Remove-Item $staging -Recurse -Force
 }
 
-if ($Install -and $PSCmdlet.ShouldProcess($vsixPath, 'Install extension')) {
-    Write-Step 'Installing the packaged extension'
-    code --install-extension $vsixPath --force
-    Write-Host 'Run "Developer: Restart Extension Host" to load the new build.'
+if ($Install -and $PSCmdlet.ShouldProcess($vsixPath, 'Install module, extension, and Copilot assets')) {
+    # Reuse the installer so the module, extension, agent, and skills all move together;
+    # installing only the .vsix leaves the PowerShell module on the previous build.
+    $settingsPath = Join-Path $HOME '.agexpert\launcher.settings.json'
+    $installedRepoRoot = if (Test-Path $settingsPath) { (Get-Content $settingsPath -Raw | ConvertFrom-Json).repoRoot }
+    if (-not $installedRepoRoot) {
+        throw "No repoRoot in $settingsPath. Run ./tools/install.ps1 -RepoRoot <path to FMPro> once first."
+    }
+
+    Write-Step 'Installing the module, extension, and Copilot assets'
+    & (Join-Path $PSScriptRoot 'install.ps1') -RepoRoot ($installedRepoRoot -replace '/', '\') -SkipProfile
+    Write-Host 'Open a new terminal (or Import-Module AgExpert.Launcher -Force) and run "Developer: Restart Extension Host" to load the new build.'
 }
 
 Write-Step "Release $newVersion ready: $vsixPath"

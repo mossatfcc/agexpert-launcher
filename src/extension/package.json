@@ -3,7 +3,7 @@
   "displayName": "AgExpert Launcher",
   "description": "Opens dedicated integrated-terminal tabs for AgExpert web apps, APIs, and the environment proxy.",
   "publisher": "agexpert",
-  "version": "0.2.4",
+  "version": "0.4.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     ]
   }
 }
+
 
 
 

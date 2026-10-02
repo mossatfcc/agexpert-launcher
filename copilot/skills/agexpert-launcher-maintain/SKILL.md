@@ -74,12 +74,16 @@ yourself running the same verification twice by hand, it belongs in `tests/`.
 
 ```powershell
 cd C:\AgExpert\agexpert-launcher
-./tools/Build-AgExpertRelease.ps1 -BumpPatch    # or -BumpMinor / -BumpMajor
+./tools/Build-AgExpertRelease.ps1 -BumpPatch -Install    # or -BumpMinor / -BumpMajor
 ```
 
 The script runs the analyzer and tests, syncs `config/` into the extension, bumps both the
-module manifest and extension `package.json`, packages the `.vsix`, and installs it. Bumping
-the extension version is what forces VS Code to load new code.
+module manifest and extension `package.json`, and packages the `.vsix`. `-Install` then runs
+`tools/install.ps1`, updating the module, extension, agent, and skills together; without it
+nothing is installed. Bumping the extension version is what forces VS Code to load new code.
+Afterwards open a new terminal and run **Developer: Restart Extension Host**.
+
+Commit the version bump so the repository never falls behind an installed build.
 
 Then update `CHANGELOG.md` under a new version heading, using Keep a Changelog sections
 (`Added`, `Changed`, `Fixed`).

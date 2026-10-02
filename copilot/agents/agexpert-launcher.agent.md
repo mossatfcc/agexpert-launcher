@@ -101,7 +101,7 @@ the client running locally against the proxy and Test APIs:
 - **Launcher URIs carry one encoded `launch` parameter.** Never add a second query parameter:
   `code.cmd` splits on `&` and the extension receives a truncated route.
 - **Editing the installed extension has no effect until the Extension Host restarts.** Ship
-  changes through `tools/Build-AgExpertRelease.ps1`, which bumps the version and reinstalls.
+  changes through `tools/Build-AgExpertRelease.ps1`, which bumps the version and, with `-Install`, reinstalls the module and extension.
 
 ## Skills
 
