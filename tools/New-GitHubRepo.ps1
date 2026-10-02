@@ -113,7 +113,7 @@ try {
     Push-Location $repoRoot
     try {
         if (-not (Test-Path (Join-Path $repoRoot '.git'))) {
-            git init -b main | Out-Null
+            git init -b master | Out-Null
         }
 
         # Only bootstrap the very first commit. Never sweep unrelated working-tree changes
@@ -144,7 +144,7 @@ try {
             $env:AGEXPERT_GITHUB_USER = $user.login
             $helper = '!f() { echo username=$AGEXPERT_GITHUB_USER; echo password=$AGEXPERT_GITHUB_TOKEN; }; f'
 
-            git -c credential.helper= -c credential.helper=$helper push -u origin main
+            git -c credential.helper= -c credential.helper=$helper push -u origin master
             if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
         }
     }
