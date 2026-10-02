@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The default branch is now `master` (was `main`). CI triggers on `master`,
+  `tools/New-GitHubRepo.ps1` initializes and pushes `master`, and the README explains how to move
+  an existing clone.
+
 ### Fixed
 
 - `Build-AgExpertRelease.ps1 -Install` now runs `tools/install.ps1`, so the PowerShell module,

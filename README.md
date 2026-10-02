@@ -131,11 +131,11 @@ Invoke-ScriptAnalyzer -Recurse ./src/module
 ## Releasing and installing a new build
 
 Run the release from the launcher checkout (`C:\AgExpert\agexpert-launcher`) after the change
-has merged:
+has merged into `master`, the default branch:
 
 ```powershell
 cd C:\AgExpert\agexpert-launcher
-git checkout main
+git checkout master
 git pull
 ./tools/Build-AgExpertRelease.ps1 -BumpPatch -Install   # or -BumpMinor / -BumpMajor
 ```
@@ -160,6 +160,17 @@ Then load the new build:
 Finally, commit the version bump (`AgExpert.Launcher.psd1` and `src/extension/package.json`)
 with a `CHANGELOG.md` entry and open a PR. An uncommitted bump lets the installed build drift
 ahead of the repository, and the next release then looks like a downgrade.
+
+### Moving an existing clone from `main` to `master`
+
+The default branch was renamed from `main` to `master`. Update older clones once:
+
+```powershell
+git fetch origin --prune
+git checkout -B master origin/master
+git branch -D main
+git remote set-head origin -a
+```
 
 ## License
 
