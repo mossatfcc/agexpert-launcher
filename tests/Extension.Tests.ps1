@@ -137,4 +137,84 @@ Describe 'VS Code extension' {
         $result.Count | Should -Be 2
         $result | ForEach-Object { $_.parent | Should -Be $null }
     }
+
+    It 'opens the client, server, and proxy for a dev environment' {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath 'launch=field%7Cenv' | ConvertFrom-Json
+        $result.Count | Should -Be 3
+        $result[0].name | Should -Be 'field client'
+        $result[1].name | Should -Be 'field server'
+        $result[2].name | Should -Be 'proxy'
+        $result[2].command | Should -Be 'Start-AgExpertProxy start'
+        $result | ForEach-Object { $_.parent | Should -Be $null }
+    }
+
+    It 'applies the build configuration to a dev environment client' {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath 'launch=field%7Cenv%7Clocalized' | ConvertFrom-Json
+        $result.Count | Should -Be 3
+        $result[0].command | Should -Be 'ng build field --watch --configuration localized'
+    }
+
+    It 'opens no proxy tab when the dev environment request is invalid' -ForEach @(
+        @{ Route = 'launch=field%7Cenv%7Cstaging' }
+        @{ Route = 'launch=gallery%7Cenv' }
+        @{ Route = 'launch=nope%7Cenv' }
+    ) {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath $Route | ConvertFrom-Json
+        $result.Count | Should -Be 0
+    }
+
+    It 'toggles a single proxy service in its own tab' -ForEach @(
+        @{ Route = 'launch=proxy%7Cfield%7Cstop'; Name = 'proxy field stop'; Command = 'Set-AgExpertProxyService field stop' }
+        @{ Route = 'launch=proxy%7Cfield%7Cstart'; Name = 'proxy field start'; Command = 'Set-AgExpertProxyService field start' }
+        @{ Route = 'launch=proxy%7CField%20API%7Cstatus'; Name = 'proxy field status'; Command = 'Set-AgExpertProxyService field status' }
+        @{ Route = 'launch=proxy%7Cbenchmarking%7Cstop'; Name = 'proxy benchmarking stop'; Command = 'Set-AgExpertProxyService benchmarking stop' }
+    ) {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath $Route | ConvertFrom-Json
+        $result.Count | Should -Be 1
+        $result[0].name | Should -Be $Name
+        $result[0].command | Should -Be $Command
+    }
+
+    It 'refuses an unknown proxy service or action' -ForEach @(
+        @{ Route = 'launch=proxy%7Cnotaservice%7Cstop' }
+        @{ Route = 'launch=proxy%7Cfield%7Cbounce' }
+    ) {
+        if (-not $script:NodeAvailable) {
+            Set-ItResult -Skipped -Because 'node is not available'
+            return
+        }
+
+        $result = node $script:HarnessPath $Route | ConvertFrom-Json
+        $result.Count | Should -Be 0
+    }
+
+    It 'contributes the <Command> command' -ForEach @(
+        @{ Command = 'agexpert.launcher.launch' }
+        @{ Command = 'agexpert.launcher.environment' }
+        @{ Command = 'agexpert.launcher.proxy' }
+        @{ Command = 'agexpert.launcher.proxyService' }
+    ) {
+        $manifest = Get-Content (Join-Path $script:RepoRoot 'src\extension\package.json') -Raw | ConvertFrom-Json
+        $manifest.contributes.commands.command | Should -Contain $Command
+    }
 }

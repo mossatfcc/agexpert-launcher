@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Three Command Palette entries in the VS Code extension: **AgExpert: Launch Proxy** (proxy tab),
+  **AgExpert: Start Dev Environment (Client, Server, Proxy)** (app client watch + server + proxy in
+  one step, offering the saved `defaultApp` first), and **AgExpert: Start or Stop a Proxy Service**
+  (filterable pick of every registry service, then `start`, `stop`, or `status`).
+- Extension routes `<app>|env|<configuration>` for the whole dev environment and
+  `proxy|<service>|<action>` for a single proxy service.
 - Angular build configurations for the app client: `default`, `localized`, `development`, and
   `production`. Add the word after the app (`agexpert field localized`,
   `agexpert field client production`, `agexpert start field development`) or pass
