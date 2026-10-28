@@ -78,8 +78,10 @@ The module never spawns terminals; instead `Open-AgExpertLauncherUri` calls `cod
 vscode://agexpert.launcher/launch?launch=<name>|<target>|<option>
 ```
 
-`<option>` is the launch profile for an API and the Angular build configuration for an app
-(omitted for `default`).
+`<option>` is the launch profile for an API, the Angular build configuration for an app
+(omitted for `default`), and the action for a proxy service. `<target>` accepts `all`, `client`,
+`server`, `api`, and `env` (client + server + proxy); the `proxy` name takes a service in the
+`<target>` slot, as in `proxy|field|stop`.
 
 Everything travels in that single `launch` parameter specifically because `code.cmd` splits on `&` —
 a second query parameter would truncate the route.
@@ -90,6 +92,15 @@ a second query parameter would truncate the route.
 synced config, and calls `createTerminal` for each piece. **Every terminal opens as its own standalone
 tab** (no grouping or splitting). This is the layer that actually runs `dotnet run` /
 `ng build --watch` in the right directory.
+
+The same routes are reachable from the Command Palette:
+
+| Command | Route |
+|---|---|
+| AgExpert: Launch App Terminals | `<app>\|all\|<configuration>` or `<api>\|api` |
+| AgExpert: Start Dev Environment (Client, Server, Proxy) | `<app>\|env\|<configuration>` |
+| AgExpert: Launch Proxy | `proxy` |
+| AgExpert: Start or Stop a Proxy Service | `proxy\|<service>\|<action>` |
 
 ## End-to-end: `agexpert start field`
 

@@ -3,8 +3,9 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const TARGETS = ["all", "client", "server", "api"];
+const TARGETS = ["all", "client", "server", "api", "env"];
 const BUILD_CONFIGURATIONS = ["default", "localized", "development", "production"];
+const PROXY_SERVICE_ACTIONS = ["start", "stop", "status"];
 
 // 'default' passes no flag so angular.json's defaultConfiguration applies.
 function configurationArgument(buildConfiguration) {
@@ -57,6 +58,7 @@ function loadConfiguration() {
       toWindowsPath(settings.repoRoot),
       toWindowsPath(settings.clientDirectory),
     ),
+    defaultApp: settings.defaultApp || "",
     apis: readJson(path.join(configDirectory, "apis.json")).apis,
     apps: readJson(path.join(configDirectory, "apps.json")).apps,
   };
@@ -92,6 +94,39 @@ function launchProxy(configuration) {
   );
 }
 
+// Republishing the container ports takes a while, so the toggle gets its own tab.
+function launchProxyService(configuration, name, action) {
+  const key = normalizeKey(name);
+  const service = configuration.apis.find(
+    (entry) =>
+      normalizeKey(entry.name) === key ||
+      normalizeKey(entry.proxyName) === key,
+  );
+
+  if (!service) {
+    vscode.window.showErrorMessage(
+      `AgExpert Launcher: unknown proxy service '${name}'.`,
+    );
+    return;
+  }
+
+  const serviceAction = (action || "status").toLowerCase();
+  if (!PROXY_SERVICE_ACTIONS.includes(serviceAction)) {
+    vscode.window.showErrorMessage(
+      `AgExpert Launcher: unknown proxy service action '${action}'. Valid: ${PROXY_SERVICE_ACTIONS.join(", ")}.`,
+    );
+    return;
+  }
+
+  createTerminal(
+    `proxy ${service.name} ${serviceAction}`,
+    configuration.repoRoot,
+    "terminal.ansiYellow",
+    "plug",
+    `Set-AgExpertProxyService ${service.name} ${serviceAction}`,
+  );
+}
+
 function launchApi(configuration, name, launchProfile) {
   const key = normalizeKey(name);
   const api = configuration.apis.find(
@@ -119,6 +154,7 @@ function launchApi(configuration, name, launchProfile) {
   );
 }
 
+// Returns whether any terminal was opened, so a caller can stop before adding the proxy tab.
 function launchApp(configuration, name, target, buildConfiguration) {
   const key = normalizeKey(name);
   const app = configuration.apps.find(
@@ -127,7 +163,7 @@ function launchApp(configuration, name, target, buildConfiguration) {
 
   if (!app) {
     vscode.window.showErrorMessage(`AgExpert Launcher: unknown app '${name}'.`);
-    return;
+    return false;
   }
 
   const buildConfigurationKey = (buildConfiguration || "default").toLowerCase();
@@ -135,7 +171,7 @@ function launchApp(configuration, name, target, buildConfiguration) {
     vscode.window.showErrorMessage(
       `AgExpert Launcher: unknown build configuration '${buildConfiguration}'. Valid: ${BUILD_CONFIGURATIONS.join(", ")}.`,
     );
-    return;
+    return false;
   }
   const buildArgument = configurationArgument(buildConfigurationKey);
 
@@ -144,7 +180,7 @@ function launchApp(configuration, name, target, buildConfiguration) {
       vscode.window.showErrorMessage(
         `AgExpert Launcher: ${app.name} does not have a server to start.`,
       );
-      return;
+      return false;
     }
     createTerminal(
       `${app.name} client`,
@@ -153,7 +189,7 @@ function launchApp(configuration, name, target, buildConfiguration) {
       "browser",
       `ng serve ${app.name}${buildArgument}`,
     );
-    return;
+    return true;
   }
 
   if (target !== "server") {
@@ -175,14 +211,38 @@ function launchApp(configuration, name, target, buildConfiguration) {
       `dotnet run --no-restore --project ${app.project} --launch-profile "${app.launchProfile}"`,
     );
   }
+
+  return true;
 }
 
-// The third route slot is the launch profile for an API and the Angular build
-// configuration for an app.
+// The whole dev environment: the app client watch, its server, and the proxy.
+function launchEnvironment(configuration, name, buildConfiguration) {
+  const key = normalizeKey(name);
+  const app = configuration.apps.find(
+    (entry) => normalizeKey(entry.name) === key,
+  );
+
+  if (app && app.clientOnly) {
+    vscode.window.showErrorMessage(
+      `AgExpert Launcher: ${app.name} is client-only and cannot start a full dev environment.`,
+    );
+    return;
+  }
+
+  if (!launchApp(configuration, name, "all", buildConfiguration)) return;
+  launchProxy(configuration);
+}
+
+// The third route slot is the launch profile for an API, the Angular build configuration
+// for an app, and the action for a proxy service.
 function launch(name, target = "all", option) {
   const configuration = loadConfiguration();
 
   if (name === "proxy") {
+    if (target && target !== "all") {
+      launchProxyService(configuration, target, option);
+      return;
+    }
     launchProxy(configuration);
     return;
   }
@@ -194,6 +254,10 @@ function launch(name, target = "all", option) {
   }
   if (target === "api") {
     launchApi(configuration, name, option);
+    return;
+  }
+  if (target === "env") {
+    launchEnvironment(configuration, name, option);
     return;
   }
 
@@ -253,6 +317,90 @@ function activate(context) {
         );
         if (!buildConfiguration) return;
         launch(choice.label, "all", buildConfiguration);
+      },
+    ),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("agexpert.launcher.proxy", () =>
+      launch("proxy"),
+    ),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "agexpert.launcher.environment",
+      async (name) => {
+        const configuration = loadConfiguration();
+        const defaultKey = normalizeKey(configuration.defaultApp);
+        const apps = configuration.apps
+          .filter((app) => !app.clientOnly)
+          .map((app) => ({
+            label: app.name,
+            description:
+              normalizeKey(app.name) === defaultKey ? "default" : undefined,
+          }))
+          .sort((first, second) =>
+            first.description === second.description
+              ? 0
+              : first.description
+                ? -1
+                : 1,
+          );
+
+        const choice =
+          name ||
+          (await vscode.window.showQuickPick(apps, {
+            placeHolder: "Select the app to run with its server and the proxy",
+          }));
+        if (!choice) return;
+
+        const buildConfiguration = await vscode.window.showQuickPick(
+          BUILD_CONFIGURATIONS,
+          { placeHolder: "Select the Angular build configuration" },
+        );
+        if (!buildConfiguration) return;
+
+        launch(
+          typeof choice === "string" ? choice : choice.label,
+          "env",
+          buildConfiguration,
+        );
+      },
+    ),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "agexpert.launcher.proxyService",
+      async (name, action) => {
+        const configuration = loadConfiguration();
+        const service =
+          name ||
+          (await vscode.window.showQuickPick(
+            configuration.apis.map((api) => ({
+              label: api.name,
+              description: `${api.proxyName} · ${api.port}`,
+            })),
+            {
+              placeHolder: "Select a proxy service",
+              matchOnDescription: true,
+            },
+          ));
+        if (!service) return;
+
+        const chosenAction =
+          action ||
+          (await vscode.window.showQuickPick(PROXY_SERVICE_ACTIONS, {
+            placeHolder: "Start, stop, or check the proxy service",
+          }));
+        if (!chosenAction) return;
+
+        launch(
+          "proxy",
+          typeof service === "string" ? service : service.label,
+          chosenAction,
+        );
       },
     ),
   );
